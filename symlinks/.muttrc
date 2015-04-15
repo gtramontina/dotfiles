@@ -1,0 +1,40 @@
+# ##############################################################################
+#   ███╗   ███╗██╗   ██╗████████╗████████╗██████╗  ██████╗
+#   ████╗ ████║██║   ██║╚══██╔══╝╚══██╔══╝██╔══██╗██╔════╝
+#   ██╔████╔██║██║   ██║   ██║      ██║   ██████╔╝██║     
+#   ██║╚██╔╝██║██║   ██║   ██║      ██║   ██╔══██╗██║     
+#██╗██║ ╚═╝ ██║╚██████╔╝   ██║      ██║   ██║  ██║╚██████╗
+#╚═╝╚═╝     ╚═╝ ╚═════╝    ╚═╝      ╚═╝   ╚═╝  ╚═╝ ╚═════╝
+# ##############################################################################
+
+source ~/.mutt/base16.muttrc
+source ~/.mutt/gmail-shortcuts.muttrc
+source ~/.mutt/inboxes/index.muttrc
+
+set sort="threads"
+# set hide_thread_subject=false
+set strict_threads=yes
+set sort_browser="reverse-date"
+set sort_aux="last-date-received"
+unset collapse_unread
+bind index - collapse-thread
+bind index _ collapse-all
+
+
+set pager_index_lines   = 10    # number of index lines to show
+
+# Formating
+# set compose_format="[Compose] ~%l │ Attachments: %a %>─"
+# set attach_format="%u%D%I %t%4n %T%.40d%> [%.7m/%.10M │ %.6e%?C? │ %C? │ %s] "
+# set alias_format="%4n %2f %t %-12a  %r"
+# set status_format="-%r-%v--[%?M?%M/?%m msgs%?n?, %n new?%?d?, %d del?%?F?, %F flag?%?t?, %t tag?%?p?, %p postp?%?b?, %b inc?%?l?, %l?]--(%f)--%s-%>-%P-"
+# set folder_format="%3C %t%N %F %-8.8u %-8.8g %8s %d %f"
+# set message_format="%-.16n: %s"
+set pager_format="%|─"
+set status_format="%|─"
+set index_format="%4C │ %Z │ %{%b %d} │ %-15.15L │ %s"
+# set attribution='On %{%a, %d %b %Y}, %n wrote:\n'
+# set forward_format = "[%s]"
+
+color status    yellow default
+color indicator white color18

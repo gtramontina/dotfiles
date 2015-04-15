@@ -1,0 +1,89 @@
+{
+    "NSGlobalDomain": {
+        "ApplePressAndHoldEnabled": false,
+        "NSScrollAnimationEnabled": false,
+        "WebKitDeveloperExtras": true,
+        "AppleShowAllExtensions": true,
+        "AppleKeyboardUIMode": 3,
+        "InitialKeyRepeat": 12,
+        "KeyRepeat": 1,
+        "NSNavPanelExpandedStateForSaveMode": true,
+        "NSWindowResizeTime": 0.001,
+        "NSAutomaticWindowAnimationsEnabled": false,
+        "NSAutomaticSpellingCorrectionEnabled": false
+    },
+    "defaults write com.apple.menuextra.battery": {
+        "ShowPercent": "NO",
+        "ShowTime": "NO"
+    },
+    "com.apple.Safari": {
+        "FindOnPageMatchesWordStartsOnly": false,
+        "UniversalSearchEnabled": false,
+        "SuppressSearchSuggestions": true,
+        "ShowFavoritesBar": false,
+        "ShowSidebarInTopSites": false,
+        "DebugSnapshotsUpdatePolicy": 2,
+        "IncludeInternalDebugMenu": true,
+        "ProxiesInBookmarksBar": "()",
+        "IncludeDevelopMenu": true,
+        "WebKitDeveloperExtrasEnabledPreferenceKey": true,
+        "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled": true,
+        "WebKitInitialTimedLayoutDelay": 0.25
+    },
+    "com.apple.Terminal": {
+        "AppleShowScrollbars": "WhenScrolling"
+    },
+    "com.apple.dashboard": {
+        "mcx-disabled": true
+    },
+    "com.apple.desktopservices": {
+        "DSDontWriteNetworkStores": true
+    },
+    "com.apple.dock": {
+        "expose-animation-duration": 0.1,
+        "expose-group-by-app": true,
+        "orientation": "left",
+        "show-process-indicators": false,
+        "tilesize": 48,
+        "showhidden": true,
+        "autohide": true,
+        "autohide-delay": 0,
+        "autohide-time-modifier": 0.2,
+        "wvous-tr-corner": 5,
+        "wvous-tr-modifier": 0,
+        "persistent-apps": [],
+        "launchanim": false
+    },
+    "com.apple.finder": {
+        "FK_AppCentricViewStyle": "clmv",
+        "FXArrangeGroupViewBy": "Name",
+        "FXDefaultSearchScope": "SCcf",
+        "FXPreferredGroupBy": "Name",
+        "FXPreferredViewStyle": "Nlsv",
+        "FXEnableExtensionChangeWarning": false,
+        "QuitMenuItem": true,
+        "ShowPathbar": true,
+        "ShowStatusBar": true,
+        "WarnOnEmptyTrash": false,
+        "EmptyTrashSecurely": true,
+        "OpenWindowForNewRemovableDisk": true,
+        "DisableAllAnimation": true
+    },
+    "com.apple.screensaver": {
+        "askForPassword": 1,
+        "askForPasswordDelay": 0
+    },
+    "com.apple.SoftwareUpdate": {
+        "ScheduleFrequency": 1
+    },
+    "com.apple.frameworks.diskimages": {
+        "auto-open-ro-root": true,
+        "auto-open-rw-root": true
+    },
+    "com.apple.iTunes": {
+        "AutomaticDeviceBackupsDisabled": true
+    },
+    "com.apple.iTunesHelper": {
+        "ignore-devices": 1
+    }
+}

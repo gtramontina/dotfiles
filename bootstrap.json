@@ -1,0 +1,69 @@
+{
+    "after-scripts": [
+        "./scripts/_run"
+    ],
+    "casks": [
+        "1password",
+        "aerial",
+        "alacritty",
+        "appcleaner",
+        "authy-desktop",
+        "docker",
+        "duet",
+        "firefox",
+        "font-hasklig-nerd-font",
+        "gpgtools",
+        "hammerspoon",
+        "kitematic",
+        "spideroakone",
+        "spotify",
+        "the-unarchiver",
+        "visual-studio-code"
+    ],
+    "formulas": [
+        "ag",
+        "diff-so-fancy",
+        "docker-clean",
+        "exa",
+        "fzf",
+        "git",
+        "git-extras",
+        "gitup",
+        "gnupg2",
+        "httpie",
+        "keybase",
+        "n",
+        "openssl",
+        "tree",
+        "vim",
+        "wget",
+        "wifi-password",
+        "zplug",
+        "zsh"
+    ],
+    "npm-modules": [
+        "fkill-cli"
+    ],
+    "ruby-gems": [
+    ],
+    "symlinks": {
+        ".alacritty.yml": "~",
+        ".aliases": "~",
+        ".bash_profile": "~",
+        ".chpwd": "~",
+        ".gemrc": "~",
+        ".gitconfig": "~",
+        ".gitignore_global": "~",
+        ".hammerspoon": "~",
+        ".hushlogin": "~",
+        ".motd": "~",
+        ".tmux.conf": "~",
+        ".vimrc": "~",
+        ".zshenv": "~",
+        ".zshrc": "~"
+    },
+    "taps": [
+        "caskroom/fonts",
+        "caskroom/versions"
+    ]
+}

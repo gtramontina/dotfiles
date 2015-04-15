@@ -1,0 +1,12 @@
+set imap_user = "guilherme@pragma.team"
+set imap_pass = ""
+set smtp_url = "smtp://guilherme@pragma.team@smtp.gmail.com:587/"
+set smtp_pass = ""
+set from = "guilherme@pragma.team"
+set realname = "Guilherme J. Tramontina"
+set folder = "imaps://imap.gmail.com:993"
+set spoolfile = "+INBOX"
+set postponed = "+[Gmail]/Drafts"
+set header_cache = ~/.mutt/inboxes/.guilherme@pragma.team/cache/headers
+set message_cachedir = ~/.mutt/inboxes/.guilherme@pragma.team/cache/bodies
+set certificate_file = ~/.mutt/inboxes/.guilherme@pragma.team/certificates

@@ -17,7 +17,9 @@ Install:andUse("ReloadConfiguration", {
 })
 
 -- http://www.hammerspoon.org/Spoons/Caffeine.html
-Install:andUse("Caffeine")
+Install:andUse("Caffeine", {
+  start = true
+})
 
 -- http://www.hammerspoon.org/Spoons/WiFiTransitions.html
 Install:andUse("WiFiTransitions", {

@@ -15,6 +15,7 @@
         "gpgtools",
         "hammerspoon",
         "kitematic",
+        "mas",
         "spideroakone",
         "spotify",
         "the-unarchiver",
@@ -45,6 +46,9 @@
         "fkill-cli"
     ],
     "ruby-gems": [
+    ],
+    "apple-store": [
+        "Xcode"
     ],
     "symlinks": {
         ".alacritty.yml": "~",

@@ -2,6 +2,9 @@
     "after-scripts": [
         "./scripts/_run"
     ],
+    "apple-store": [
+        "Xcode"
+    ],
     "casks": [
         "1password",
         "aerial",
@@ -46,11 +49,7 @@
     "npm-modules": [
         "fkill-cli"
     ],
-    "ruby-gems": [
-    ],
-    "apple-store": [
-        "Xcode"
-    ],
+    "ruby-gems": [],
     "symlinks": {
         ".alacritty.yml": "~",
         ".aliases": "~",

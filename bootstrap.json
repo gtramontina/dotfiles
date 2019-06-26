@@ -47,7 +47,8 @@
         "zsh"
     ],
     "npm-modules": [
-        "fkill-cli"
+        "fkill-cli",
+        "taskboard"
     ],
     "ruby-gems": [],
     "symlinks": {

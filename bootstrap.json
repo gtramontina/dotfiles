@@ -24,6 +24,14 @@
         "the-unarchiver",
         "visual-studio-code"
     ],
+    "firefox-extensions": [
+        "adblock-plus",
+        "https-everywhere",
+        "multi-account-containers",
+        "privacy-badger17",
+        "ublock-origin",
+        "vimium-ff"
+    ],
     "formulas": [
         "ag",
         "diff-so-fancy",
@@ -64,7 +72,8 @@
         ".tmux.conf": "~",
         ".vimrc": "~",
         ".zshenv": "~",
-        ".zshrc": "~"
+        ".zshrc": "~",
+        "Firefox": "~/Library/Application Support/"
     },
     "taps": [
         "caskroom/fonts",

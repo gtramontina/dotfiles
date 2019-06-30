@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -eu
 
-[ -d ~/.cider ] || git clone https://github.com/gtramontina/dotfiles.git ~/.cider
+[ -d ~/.cider ] || (curl -L -s https://github.com/gtramontina/dotfiles/archive/master.tar.gz | tar -xzv && mv dotfiles-master ~/.cider)
 command -v brew   >/dev/null || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 command -v pip    >/dev/null || brew install python
 command -v cider  >/dev/null || pip2 --no-cache-dir install cider
 
 cider restore
+
+(cd ~/.cider; git init; git remote add origin git@github.com:gtramontina/dotfiles.git; git fetch origin; git reset --hard origin/master)

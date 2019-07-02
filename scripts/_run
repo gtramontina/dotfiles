@@ -1,25 +1,16 @@
 #!/usr/bin/env bash
 set -eu
 
-#
-# Run all scripts located in this directory, alphabetically ordered
-#
+echo "🔧 Running setup scripts…"
 
 path=~/.cider/scripts
-scripts=$(ls "$path" | grep -v $(basename "$0") | sort)
+self=$(basename "$0")
+scripts=$(ls "$path" | grep -v "$self" | sort)
 
 for script_name in $scripts; do
   script_path="$path/$script_name"
-  [ ! -x $script_path ] && continue
-
-  echo
-  echo "—————————————————————————————————"
-  echo "🏃‍  Running ${script_name}…"
-  echo "—————————————————————————————————"
-  $script_path
+  [ -x "$script_path" ] && $script_path
 done
 
-echo "—————————————————————————————————"
-echo "👌  All good!"
-echo "⚠️  Please reboot your laptop"
-echo "—————————————————————————————————"
+echo "✨ All good!"
+echo "⚠️ Please reboot"

@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+set -eu
+
+echo "🥄 Installing default Hammerspoon Spoons…"
 
 spoons=~/.hammerspoon/Spoons
 mkdir -p ${spoons}

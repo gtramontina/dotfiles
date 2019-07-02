@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+set -eu
+
+echo "🌽 Installing NPM modules…"
 
 RC=$(mktemp -t rcfile); cat << EOF > $RC
     n latest
@@ -8,6 +11,5 @@ zsh --rcs $RC
 unset RC
 
 modules=$(node -p "require(process.env.HOME+'/.cider/bootstrap')['npm-modules'].join('\n')")
-echo "Installing global NPM modules…"
-npx yarn global add $(echo $modules)
+npx yarn global add ${modules}
 npx yarn global upgrade -L

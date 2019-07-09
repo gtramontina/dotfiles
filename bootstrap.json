@@ -26,6 +26,7 @@
     ],
     "firefox-extensions": [
         "adblock-plus",
+        "firefox-color",
         "https-everywhere",
         "multi-account-containers",
         "privacy-badger17",

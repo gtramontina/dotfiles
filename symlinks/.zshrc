@@ -33,5 +33,3 @@ bindkey '^ ' autosuggest-accept # CTRL+SPACE
 [ -r $HOME/.motd ] && source $HOME/.motd
 [ -r $HOME/.env.local ] && source $HOME/.env.local
 
-[ -r $HOME/.travis/travis.sh ] && source $HOME/.travis/travis.sh               # Added by Travis gem
-[ -r $SDKMAN_DIR/bin/sdkman-init.sh ] && source $SDKMAN_DIR/bin/sdkman-init.sh # Added by SDKMAN

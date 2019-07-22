@@ -18,4 +18,5 @@ export ASDF_DIR=$(brew --prefix asdf)
 export SDKMAN_DIR=$HOME/.sdkman
 export PATH="/usr/local/sbin:$PATH"
 
-# export PATH="$(brew --prefix llvm)/bin:$PATH"
+# Added by n-install (see http://git.io/n-install-repo).
+export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"

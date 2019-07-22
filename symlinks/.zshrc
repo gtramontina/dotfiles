@@ -32,3 +32,4 @@ bindkey '^ ' autosuggest-accept # CTRL+SPACE
 [ -r $HOME/.fzf.zsh ] && source $HOME/.fzf.zsh
 [ -r $HOME/.motd ] && source $HOME/.motd
 [ -r $HOME/.env.local ] && source $HOME/.env.local
+

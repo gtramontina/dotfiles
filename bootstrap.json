@@ -57,7 +57,8 @@
     ],
     "npm-modules": [
         "fkill-cli",
-        "taskboard"
+        "taskboard",
+        "wifi-password-cli"
     ],
     "ruby-gems": [],
     "symlinks": {

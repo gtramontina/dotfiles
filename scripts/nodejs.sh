@@ -8,3 +8,4 @@ command -v n >/dev/null || ((curl -L https://git.io/n-install | bash -s -- -y la
 modules=$(node -p "require(process.env.HOME+'/.cider/bootstrap')['npm-modules'].join('\n')")
 npx yarn global add ${modules}
 npx yarn global upgrade -L
+npx yarn cache clean

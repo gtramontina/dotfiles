@@ -47,6 +47,7 @@
         "fzf",
         "git",
         "git-extras",
+        "github/gh/gh",
         "gitup",
         "gnupg2",
         "httpie",

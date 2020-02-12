@@ -84,3 +84,9 @@ Install:andUse("TextClipboardHistory", {
 })
 
 hs.notify.show("Hammerspoon", "Configuration loaded", '')
+
+-- timer
+hs.hotkey.bind(hyper, "T", function()
+  local success, obj, descriptor = hs.osascript._osascript("set t to (time string of (current date))", "AppleScript")
+  hs.alert.show(obj)
+end)

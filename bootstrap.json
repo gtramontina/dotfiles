@@ -2,8 +2,10 @@
     "after-scripts": [
         "./scripts/_run"
     ],
-    "apple-store": [
-        "Xcode"
+    "apple-store-id": [
+        "497799835",
+        "1452453066",
+        "1470584107"
     ],
     "casks": [
         "1password",

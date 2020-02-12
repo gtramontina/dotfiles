@@ -65,6 +65,7 @@
   prune = branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print $1}' | xargs git branch -D
   u = "!gitup ."
   start = "!git init && git commit --allow-empty --allow-empty-message -m ''"
+  addp = "!git add --intent-to-add . && git add --patch"
 
 [push]
   default = simple

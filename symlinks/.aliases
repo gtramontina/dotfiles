@@ -3,10 +3,5 @@ alias localip="ipconfig getifaddr en0"
 alias update="brew update; brew upgrade; brew cleanup; zplug update; gem update --system; gem update; ~/.tmux/plugins/tpm/bin/update_plugins all; vim +PlugUpdate +qall; sudo softwareupdate -i -a --restart"
 alias serve='python -m SimpleHTTPServer'
 alias l="exa -hlab --git"
-alias weechat="docker run \
-  -it \
-  -v "${HOME}/.weechat:/home/user/.weechat" \
-  -e TZ=`ls -la /etc/localtime | cut -d/ -f8-9` \
-  -e TERM=screen-256color \
-  r.j3ss.co/wee-slack
-"
+alias ya="npx yarn"
+

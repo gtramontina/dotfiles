@@ -1,7 +1,8 @@
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias localip="ipconfig getifaddr en0"
-alias update="brew update; brew upgrade; brew cleanup; zplug update; gem update --system; gem update; ~/.tmux/plugins/tpm/bin/update_plugins all; vim +PlugUpdate +qall; sudo softwareupdate -i -a --restart"
-alias serve='python -m SimpleHTTPServer'
+alias update="brew update; brew upgrade; brew cleanup -s; rm -rf $(brew --cache); zplug update; gem update --system; gem update; ~/.tmux/plugins/tpm/bin/update_plugins all; vim +PlugUpdate +qall; sudo softwareupdate -i -a --restart"
+alias serve="python -m SimpleHTTPServer"
+alias join-pdf="\"/System/Library/Automator/Combine PDF Pages.action/Contents/Resources/join.py\""
 alias l="exa -hlab --git"
 alias ya="npx yarn"
-
+alias yarn="npx yarn"

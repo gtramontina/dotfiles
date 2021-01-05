@@ -1,0 +1,8 @@
+function ci {
+  (
+    git pull --rebase --autostash \
+    && make test.all lint \
+    && git push \
+    && osascript -e 'display notification "Done!" with title "✅ CI"') \
+    || osascript -e 'display notification "Failed!" with title "❌ CI"'
+}

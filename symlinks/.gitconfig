@@ -30,13 +30,21 @@
   untracked = blue
 
 [core]
-	excludesfile = ~/.gitignore_global
-  pager = diff-so-fancy | less -s -M +Gg --tabs=4 -FRSX
+  excludesfile = ~/.gitignore_global
+  pager = delta
   whitespace=fix,-indent-with-non-tab,trailing-space,space-before-tab,cr-at-eol
+
+[interactive]
+  diffFilter = delta --color-only
+
+[delta]
+  syntax-theme = GitHub
+  features = line-numbers decorations
 
 [diff]
   ignoreSubmodules = dirty
   compactionHeuristic = true
+  colorMoved = dimmed_zebra
 
 [alias]
   l = log
@@ -44,20 +52,17 @@
   ls = log --stat
   last = log -1 HEAD
   w = log --name-status # short whatchanged
-  s = show
-  d = diff --word-diff
+  s = "![ $(tput cols) -gt 200 ] && git -c \"core.pager=delta --side-by-side\" show || git show"
+  d = "![ $(tput cols) -gt 200 ] && git -c \"core.pager=delta --side-by-side\" diff || git diff"
   ds = diff --staged
-  dsf = "!f() { [ \"$GIT_PREFIX\" != \"\" ] && cd "$GIT_PREFIX"; git diff --color $@ | diff-so-fancy | less --tabs=4 -RFX; }; f"
   st = status
   ss = status -s
-  ci = commit --verbose
+  ci = commit
   co = checkout
   cf = "!git ss | grep UU --color"
   ccf = "!git ss | grep UU --color | wc -l"
-  br = branch
   p = push
-  r = remote
-  reb = "!git pull --rebase origin $(git branch | grep '*' | cut -d ' ' -f2)"
+  reb = "!git pull --rebase --autostash origin $(git branch | grep '*' | cut -d ' ' -f2)"
   unstage = reset HEAD --
   browse = instaweb -d webrick
   boom = clean -xfd
@@ -78,11 +83,9 @@
 [gpg]
   program = gpg2
 
-[heroku]
-  account = personal
-
 [commit]
   gpgsign = true
+  verbose = true
 
 [rebase]
   autosquash = true

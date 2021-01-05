@@ -63,6 +63,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/goyo.vim'
   Plug 'blueyed/vim-diminactive'
   Plug 'w0rp/ale'
+  Plug 'Yggdroot/indentLine'
+  Plug 'pacha/vem-tabline'
 
   Plug 'pangloss/vim-javascript'
 call plug#end()
@@ -100,6 +102,7 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 " ——————————————————————————————————————————————————————————————————————————————
 
 let g:diminactive_use_syntax = 1
+let g:indentLine_char = '┆'
 
 " ——————————————————————————————————————————————————————————————————————————————
 " Status Bar

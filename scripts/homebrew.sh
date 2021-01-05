@@ -2,4 +2,4 @@
 set -eu
 
 echo "🍻 Cleaning up homebrew…"
-brew cleanup --prune --force -s
+brew cleanup --prune=all -s

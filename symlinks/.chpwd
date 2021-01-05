@@ -15,7 +15,7 @@ chpwd () {
 	if [ -r .nvmrc ]; then
 		version=`cat .nvmrc`
 		echo_info "Using Node $version"
-		n $version
+		#n $version
 	fi
 }
 

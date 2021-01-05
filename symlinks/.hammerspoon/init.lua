@@ -9,34 +9,10 @@ hyper = { "cmd", "alt", "ctrl" }
 shift_hyper = { "cmd", "alt", "ctrl", "shift" }
 
 -- http://www.hammerspoon.org/Spoons/ReloadConfiguration.html
-Install:andUse("ReloadConfiguration", {
-  start = true,
-  hotkeys = {
-    reloadConfiguration = { hyper, "r" }
-  },
-})
+Install:andUse("ReloadConfiguration", { start = true, hotkeys = { reloadConfiguration = { hyper, "r" } } })
 
 -- http://www.hammerspoon.org/Spoons/Caffeine.html
-Install:andUse("Caffeine", {
-  start = true
-})
-
--- http://www.hammerspoon.org/Spoons/WiFiTransitions.html
-Install:andUse("WiFiTransitions", {
-  start = true,
-  config = {
-    actions = {
-      {
-        fn = function(_, _, prev_ssid, new_ssid)
-          local changed = prev_ssid ~= nil
-          local title = (changed and "WiFi SSID Changed" or "WiFi Connected")
-          local description = (changed and string.format("From: %s\nTo: %s", prev_ssid, new_ssid) or string.format("SSID: %s", new_ssid))
-          hs.notify.show(title, description, "")
-        end
-      }
-    }
-  },
-})
+Install:andUse("Caffeine", { start = true })
 
 -- http://www.hammerspoon.org/Spoons/WindowHalfsAndThirds.html
 Install:andUse("WindowHalfsAndThirds", {
@@ -84,9 +60,3 @@ Install:andUse("TextClipboardHistory", {
 })
 
 hs.notify.show("Hammerspoon", "Configuration loaded", '')
-
--- timer
-hs.hotkey.bind(hyper, "T", function()
-  local success, obj, descriptor = hs.osascript._osascript("set t to (time string of (current date))", "AppleScript")
-  hs.alert.show(obj)
-end)

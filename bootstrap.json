@@ -68,6 +68,7 @@
         "pyenv",
         "ranger",
         "rustup-init",
+        "starship",
         "tmux",
         "tree",
         "vim",
@@ -98,7 +99,8 @@
         ".vimrc": "~",
         ".zshenv": "~",
         ".zshrc": "~",
-        "Firefox": "~/Library/Application Support/"
+        "Firefox": "~/Library/Application Support/",
+        "starship.toml": "~/.config/"
     },
     "taps": [
         "homebrew/cask-fonts",

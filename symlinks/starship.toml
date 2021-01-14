@@ -1,0 +1,40 @@
+format = """
+$aws\
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_commit\
+$git_state\
+$git_status\
+$custom\
+$cmd_duration\
+$line_break\
+$status\
+$character"""
+
+add_newline = false
+
+[aws]
+format = '[\($profile\)]($style) '
+style = "bold yellow"
+
+[directory]
+truncate_to_repo = false
+truncation_symbol = "…/"
+style = "blue"
+
+[git_branch]
+format = "[$branch]($style)"
+style = "dimmed white"
+
+[git_status]
+format = "[$all_status$ahead_behind]($style) "
+style = "dimmed white"
+modified = "*"
+
+[cmd_duration]
+min_time = 1000
+format = "[$duration]($style)"
+style = "bold yellow"
+

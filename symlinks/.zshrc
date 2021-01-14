@@ -7,13 +7,6 @@
 # ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝
 # ##############################################################################
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-[ -r $HOME/.cache/p10k-instant-prompt-${(%):-%n}.zsh ] && source $HOME/.cache/p10k-instant-prompt-${(%):-%n}.zsh
-
-# ---
-
 export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=50000
 export SAVEHIST=$HISTSIZE
@@ -31,29 +24,12 @@ setopt HIST_REDUCE_BLANKS     # Remove superfluous blanks before recording entry
 setopt HIST_VERIFY            # Don't execute immediately upon history expansion.
 setopt HIST_BEEP              # Beep when accessing nonexistent history.
 
-[ -r $ZPLUG_HOME/init.zsh ] && source $ZPLUG_HOME/init.zsh
-zplug "zsh-users/zsh-history-substring-search"
-zplug "zsh-users/zsh-autosuggestions"
-zplug "zsh-users/zsh-completions"
-zplug "plugins/git", from:oh-my-zsh, if:"which git"
-zplug "lib/history", from:oh-my-zsh
-zplug "lib/key-bindings", from:oh-my-zsh
-zplug "lib/completion", from:oh-my-zsh
-zplug "chriskempson/base16-shell"
-zplug "tmux-plugins/tpm", dir:"$HOME/.tmux/plugins/tpm"
-zplug "romkatv/powerlevel10k", as:theme, depth:1
-(zplug check || zplug install) && zplug load
-
-bindkey '^ ' autosuggest-accept # CTRL+SPACE
-
 [ -s $BASE16_SHELL/profile_helper.sh ] && eval "$($BASE16_SHELL/profile_helper.sh)"
-
 [ -r $HOME/.aliases ] && source $HOME/.aliases
 [ -r $HOME/.functions ] && source $HOME/.functions
 [ -r $HOME/.chpwd ] && source $HOME/.chpwd
 [ -r $HOME/.fzf.zsh ] && source $HOME/.fzf.zsh
 [ -r $HOME/.motd ] && source $HOME/.motd
 [ -r $HOME/.env.local ] && source $HOME/.env.local
-[ -r $HOME/.p10k.zsh ] && source $HOME/.p10k.zsh
 
-[ $(command -v pyenv) ] && eval "$(pyenv init -)"
+eval "$(starship init zsh)"

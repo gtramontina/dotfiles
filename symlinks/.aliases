@@ -6,3 +6,4 @@ alias join-pdf="\"/System/Library/Automator/Combine PDF Pages.action/Contents/Re
 alias l="exa -hlab --git"
 alias ya="npx yarn"
 alias yarn="npx yarn"
+alias g="git"

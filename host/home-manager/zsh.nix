@@ -5,7 +5,11 @@ let
   aliases = {
     l = "exa --all --long --header --git --icons --classify";
     g = "git";
-    update = "darwin-rebuild switch";
+
+    # dotfiles
+    dot-update = "darwin-rebuild switch && sudo softwareupdate -i -a --restart";
+    dot-edit = "eval \"$EDITOR ${builtins.toString ./../..}\"";
+    dot-cleanup = "nix-collect-garbage -d && sudo nix-collect-garbage -d && brew cleanup";
 
     # WORK
     v = "aws-vault exec --debug --duration=1h";

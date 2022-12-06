@@ -6,7 +6,7 @@
 ### <img src="https://img.icons8.com/stickers/200/null/keyboard.png" width="18"> One-liner
 
 ```shell
-curl -Ls https://raw.githubusercontent.com/gtramontina/dotfiles/master/setup.sh | bash -s <hostname>
+curl -Ls https://raw.githubusercontent.com/gtramontina/dotfiles/main/install.sh | bash -s <hostname> [directory]
 ```
 
 ### <img src="https://img.icons8.com/stickers/200/null/info.png" width="18"> What?

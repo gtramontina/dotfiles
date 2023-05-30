@@ -14,6 +14,8 @@ in
     ./homebrew
   ];
 
+  users = { users = { ${username} = { home = "/Users/${username}"; }; }; };
+
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;

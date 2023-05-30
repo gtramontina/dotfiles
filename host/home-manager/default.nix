@@ -10,7 +10,7 @@
   ];
 
   home = {
-    stateVersion = "22.05";
+    stateVersion = "23.05";
 
     packages = with pkgs; [
       aws-vault

@@ -9,6 +9,7 @@
     ./newsboat.nix
     ./tmux.nix
     ./zsh.nix
+    ./wezterm.nix
   ];
 
   home = {

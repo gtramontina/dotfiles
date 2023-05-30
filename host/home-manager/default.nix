@@ -5,6 +5,7 @@
     ./alacritty.nix
     ./git.nix
     ./kitty.nix
+    ./neovim.nix
     ./newsboat.nix
     ./tmux.nix
     ./zsh.nix

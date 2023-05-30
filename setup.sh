@@ -11,6 +11,10 @@ function main() {
 
 	log::info "Setting up Nix environment…"
 
+	sudo scutil --set HostName "$host"
+	sudo scutil --set LocalHostName "$host"
+	sudo scutil --set ComputerName "$host"
+
 	if [[ -z "$(command -v git)" ]]; then
 		log::info "Installing git via xcode-select…"
 		xcode-select --install

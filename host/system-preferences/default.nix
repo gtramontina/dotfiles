@@ -15,6 +15,8 @@
     cozette
   ];
 
+  security.pam.enableSudoTouchIdAuth = true;
+
   system = {
     keyboard = {
       enableKeyMapping = true;
@@ -54,7 +56,7 @@
       };
 
       NSGlobalDomain = {
-        _HIHideMenuBar = true;
+        #_HIHideMenuBar = true;
         ApplePressAndHoldEnabled = false;
         AppleShowAllExtensions = true;
         InitialKeyRepeat = 10;

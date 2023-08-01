@@ -1,19 +1,18 @@
 { config, pkgs, ... }:
 
 let
-
   aliases = {
-    l = "exa --all --long --header --git --icons --classify";
+    l = "eza --all --long --header --links --git --git-repos --icons --classify --hyperlink";
     g = "git";
+    vim = "nvim";
+    vi = "nvim";
 
     # dotfiles
-    dot-update = "darwin-rebuild switch && sudo softwareupdate -i -a --restart";
+    dot-rebuild = "darwin-rebuild switch";
+    dot-update = "nix-channel --update && sudo nix-channel --update && dot-rebuild && sudo softwareupdate -i -a --restart";
     dot-edit = "eval \"$EDITOR ${builtins.toString ./../..}\"";
-    dot-cleanup = "nix-collect-garbage -d && sudo nix-collect-garbage -d && brew cleanup";
-
-    # WORK
-    v = "aws-vault exec --debug --duration=1h";
-    ci = "(git pull --rebase origin master && make test.all lint && git push origin master && osascript -e 'display notification \"✅ Succeeded!\" with title \"Push\" sound name \"Submarine\"') || osascript -e 'display notification \"❌ Failed!\" with title \"Push\" sound name \"Submarine\"'";
+    dot-cleanup = "sudo nix-collect-garbage -d && nix-collect-garbage -d && brew cleanup";
+    dot-upgrade = "sudo rm -rf /etc/shells && dot-update && dot-cleanup";
   };
 
   environmentVariables = {
@@ -27,26 +26,18 @@ in {
     zsh = {
       enable = true;
       enableCompletion = true;
-      enableSyntaxHighlighting = true;
-      enableAutosuggestions = true;
+      syntaxHighlighting = { enable = true; };
+      autosuggestion = { enable = true; };
       autocd = true;
       sessionVariables = environmentVariables;
       shellAliases = aliases;
-      plugins = [
-        {
-          name = "base16-shell";
-          file = "base16-shell.plugin.zsh";
-          src = builtins.fetchGit {
-            url = "https://github.com/chriskempson/base16-shell";
-            rev = "588691ba71b47e75793ed9edfcfaa058326a6f41";
-          };
-        }
-      ];
       initExtra = ''
-        # Set PATH, MANPATH, etc., for Homebrew.
+        # Homebrew
         eval "$(/opt/homebrew/bin/brew shellenv)"
 
-        # Configure links for docker plugins
+        PATH=$PATH:$HOME/.local/bin
+
+        # Docker Plugins
         [[ ! -d "$HOME/.docker/cli-plugins" ]] && \
           mkdir -p "$HOME/.docker/cli-plugins"
         [[ ! "$(readlink "$HOME/.docker/cli-plugins/docker-compose")" -ef /opt/homebrew/opt/docker-compose/bin/docker-compose ]] && \
@@ -56,11 +47,20 @@ in {
 
     starship = {
       enable = true;
+      settings = {
+        add_newline = false;
+        custom = {
+          direnv = {
+            format = "[\\[direnv\\]]($style) ";
+            style = "fg:yellow dimmed";
+            when = "printenv DIRENV_FILE";
+          };
+        };
+      };
     };
 
-    exa = {
+    eza = {
       enable = true;
-      enableAliases = true;
     };
 
     fzf = {

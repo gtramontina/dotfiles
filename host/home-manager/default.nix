@@ -2,29 +2,28 @@
 {
 
   imports = [
-    ./alacritty.nix
+    ./direnv.nix
     ./git.nix
-    ./kitty.nix
     ./neovim.nix
     ./newsboat.nix
-    ./tmux.nix
+    # ./tmux.nix
     ./zsh.nix
     ./wezterm.nix
+    #./vscode.nix # installed with brew
   ];
 
   home = {
-    stateVersion = "23.05";
+    stateVersion = "23.11";
 
     packages = with pkgs; [
-      aws-vault
-      awscli2
-      colima
-      go_1_19
-      htop
-      jq
-      nodejs
-      yarn
+      devbox
+      gnupg
+      nodejs_21
+      ripgrep
     ];
   };
 
+  programs.helix = {
+    enable = true;
+  };
 }

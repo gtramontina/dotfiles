@@ -16,7 +16,6 @@
     '';
 
     taps = [
-      "homebrew/cask"
     ];
 
     brews = [
@@ -26,27 +25,38 @@
     ];
 
     casks = [
+      "arc"
+      "1password"
       "appcleaner"
+      "blockblock"
       "brave-browser"
-      "little-snitch"
+      "goland"
+      "kap"
+      "knockknock"
+      "visual-studio-code"
+      # "little-snitch" # downloaded manually -- sonoma not yet supported
       "micro-snitch"
       "monodraw"
+      "orbstack"
+      # "orion"
+      "proton-drive"
       "protonvpn"
       "raycast"
       "reikey"
+      "shottr"
       "signal"
-      "spotify"
-
-      # Work
-      "cron"
-      "goland"
+      "the-unarchiver"
       "tuple"
-      "zoom"
+      "utm"
+      "zed"
+      "whatsapp"
     ];
 
     masApps = {
-      Dato = 1470584107;
+      # Dato = 1470584107;
+      GoProPlayer_ReelSteady = 1460836908;
+      XCode = 497799835;
+      Cleaner_For_XCode = 1296084683;
     };
   };
-
 }

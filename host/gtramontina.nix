@@ -5,7 +5,6 @@ let
 
 in
 {
-
   system.stateVersion = 4;
 
   imports = [

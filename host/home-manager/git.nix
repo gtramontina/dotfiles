@@ -4,6 +4,7 @@
   home = {
     packages = with pkgs; [
       git-extras
+      git-branchless
     ];
   };
 
@@ -31,6 +32,11 @@
       rebase.autosquash = true;
       rebase.autostash = true;
     };
+    includes = [
+      {
+        path = "~/workspaces/indebted/.gitconfig";
+        condition = "gitdir:~/workspaces/indebted/";
+      }
+    ];
   };
-
 }

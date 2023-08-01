@@ -19,7 +19,7 @@
         },
         window_decorations = "RESIZE",
         font = wezterm.font("Berkeley Mono Variable"),
-        font_size = 12.0,
+        font_size = 14.0,
         color_scheme = "Ayu Mirage",
         use_fancy_tab_bar = false,
         tab_bar_at_bottom = true,

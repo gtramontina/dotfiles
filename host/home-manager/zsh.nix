@@ -5,9 +5,11 @@ let
   aliases = {
     l = "exa --all --long --header --git --icons --classify";
     g = "git";
+    vim = "XDG_CONFIG_HOME=~/.astronvim nvim";
 
     # dotfiles
-    dot-update = "darwin-rebuild switch && sudo softwareupdate -i -a --restart";
+    dot-rebuild = "darwin-rebuild switch";
+    dot-update = "nix-channel --update && sudo nix-channel --update && dot-rebuild && sudo softwareupdate -i -a --restart";
     dot-edit = "eval \"$EDITOR ${builtins.toString ./../..}\"";
     dot-cleanup = "nix-collect-garbage -d && sudo nix-collect-garbage -d && brew cleanup";
 
@@ -27,7 +29,7 @@ in {
     zsh = {
       enable = true;
       enableCompletion = true;
-      enableSyntaxHighlighting = true;
+      syntaxHighlighting = { enable = true; };
       enableAutosuggestions = true;
       autocd = true;
       sessionVariables = environmentVariables;
@@ -46,11 +48,18 @@ in {
         # Set PATH, MANPATH, etc., for Homebrew.
         eval "$(/opt/homebrew/bin/brew shellenv)"
 
+        PATH=$PATH:$HOME/.local/bin
+
         # Configure links for docker plugins
         [[ ! -d "$HOME/.docker/cli-plugins" ]] && \
           mkdir -p "$HOME/.docker/cli-plugins"
         [[ ! "$(readlink "$HOME/.docker/cli-plugins/docker-compose")" -ef /opt/homebrew/opt/docker-compose/bin/docker-compose ]] && \
           ln -sfn /opt/homebrew/opt/docker-compose/bin/docker-compose "$HOME/.docker/cli-plugins/docker-compose"
+
+        # Load pyenv
+        export PYENV_ROOT="$HOME/.pyenv"
+        command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init -)"
       '';
     };
 

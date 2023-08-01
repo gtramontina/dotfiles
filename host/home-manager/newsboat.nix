@@ -6,6 +6,24 @@
       enable = true;
       autoReload = true;
       reloadTime = 10;
+      extraConfig = ''
+        # colors
+        color background          color229   default
+        color listnormal          color229   default
+        color listnormal_unread   color229   default
+        color listfocus           color229   color61 bold
+        color listfocus_unread    color229   color61 bold
+        color info                color247   color235
+        color article             color229   default
+
+        # highlights
+        highlight article "^(Feed|Link):.*$" color46 default bold
+        highlight article "^(Title|Date|Author):.*$" color39 default bold
+        highlight article "https?://[^ ]+" color46 default underline
+        highlight article "\\[[0-9]+\\]" color63 default bold
+        highlight article "\\[image\\ [0-9]+\\]" color63 default bold
+        highlight feedlist "^─.*$" color61 color235 bold
+      '';
       urls = [
         { url = "https://gtramontina.com/feed.atom"; title = "Guilherme Tramontina"; }
         { url = "https://8thlight.com/blog/feed/rss.xml"; title = "8th Light"; }

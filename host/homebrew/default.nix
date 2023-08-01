@@ -17,36 +17,53 @@
 
     taps = [
       "homebrew/cask"
+      "jamesjoshuahill/tap"
     ];
 
     brews = [
+      { name = "colima"; args = ["HEAD"]; }
       "docker"
       "docker-compose"
       "docker-credential-helper"
+      "pyenv"
+
+      # Work
+      "jamesjoshuahill/tap/git-co-author"
+      "tfenv"
+      "diffutils"
     ];
 
     casks = [
+      # "adobe-acrobat-reader"
       "appcleaner"
       "brave-browser"
+      "blockblock"
+      "knockknock"
       "little-snitch"
       "micro-snitch"
       "monodraw"
-      "protonvpn"
+      "popclip"
       "raycast"
       "reikey"
+      "shottr"
       "signal"
+      "spideroakone"
       "spotify"
+      "the-unarchiver"
+      "tunnelblick"
+      # "vysor"
+      # "zed"
+      "orbstack"
+      "orion"
 
       # Work
       "cron"
-      "goland"
+      "jetbrains-toolbox"
       "tuple"
-      "zoom"
     ];
 
     masApps = {
       Dato = 1470584107;
     };
   };
-
 }

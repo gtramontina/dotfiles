@@ -16,15 +16,39 @@
     stateVersion = "23.05";
 
     packages = with pkgs; [
+      # colima # installing via brew to get latest
+      btop
+      cloc
+      coreutils
+      crystal
+      shards # crystal dependency manager
+      ctop
+      diskonaut
+      elinks
+      fd
+      gh
+      glow
+      htop
+      nushell
+      ripgrep
+      tree
+      xplr
+      python310Packages.pipx
+
+      # Work
       aws-vault
       awscli2
-      colima
-      go_1_19
-      htop
+      go
+      graphviz
+      jdk11
       jq
       nodejs
+      rustup
       yarn
     ];
   };
 
+  programs.helix = {
+    enable = true;
+  };
 }

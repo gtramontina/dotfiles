@@ -1,6 +1,6 @@
 {
   imports = [
     ../modules/home
-    ../modules/profiles/work
+    ../modules/profiles/work.nix
   ];
 }

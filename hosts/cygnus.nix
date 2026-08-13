@@ -1,7 +1,7 @@
 {
   imports = [
     ../modules/home
-    ../modules/profiles/personal
-    ../modules/linux
+    ../modules/profiles/personal.nix
+    ../modules/linux.nix
   ];
 }

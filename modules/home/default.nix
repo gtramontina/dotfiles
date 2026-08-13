@@ -6,6 +6,9 @@
   home = {
     stateVersion = "23.11";
 
+    username = "gtramontina";
+    homeDirectory = if pkgs.stdenv.isDarwin then "/Users/gtramontina" else "/home/gtramontina";
+
     sessionVariables = {
       EDITOR = "vim";
       HOMEBREW_NO_ANALYTICS = 1;

@@ -16,6 +16,12 @@
     pkgs.departure-mono
   ];
 
+  users.users.gtramontina = {
+    home = "/Users/gtramontina";
+    uid = 501;
+    description = "Guilherme J. Tramontina";
+  };
+
   networking = {
     applicationFirewall = {
       enable = true;

@@ -3,15 +3,15 @@
 set -eo pipefail
 
 function main() {
-	if ! command -v nix &>/dev/null; then
-		log::info "Installing Nix…"
-		curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-		log::info "Nix installed successfully."
-		log::warn "⚠️ Start a new shell and run this script again!"
-		return 0
-	fi
+  if ! command -v nix &>/dev/null; then
+    log::info "Installing Nix…"
+    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+    log::info "Nix installed successfully."
+    log::warn "⚠️ Start a new shell and run this script again!"
+    return 0
+  fi
 
-	make switch
+  make switch
 }
 
 function color::reset() { echo -e "$1\033[0m"; }

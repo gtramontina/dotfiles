@@ -28,33 +28,35 @@
       "herdr"
     ];
 
-    casks = [
-      "1password"
-      "8bitdo-ultimate-software-v2"
-      "appcleaner"
-      "betterdisplay"
-      "brave-browser"
-      "handy"
-      "little-snitch"
-      "micro-snitch"
-      "monodraw"
-      "orbstack"
-      "protonvpn"
-      "raycast"
-      "shottr"
-      "the-unarchiver"
-      "zed@preview"
-      "ghostty"
-      "signal"
-      "tailscale"
-      "stremio"
-    ] ++ lib.optionals (profile == "work") [
-      "notion-calendar"
-      "slack"
-      "licecap"
-      "tuple"
-      "pop-app"
-    ];
+    casks =
+      [
+        "1password"
+        "8bitdo-ultimate-software-v2"
+        "appcleaner"
+        "betterdisplay"
+        "brave-browser"
+        "handy"
+        "little-snitch"
+        "micro-snitch"
+        "monodraw"
+        "orbstack"
+        "protonvpn"
+        "raycast"
+        "shottr"
+        "the-unarchiver"
+        "zed@preview"
+        "ghostty"
+        "signal"
+        "tailscale"
+        "stremio"
+      ]
+      ++ lib.optionals (profile == "work") [
+        "notion-calendar"
+        "slack"
+        "licecap"
+        "tuple"
+        "pop-app"
+      ];
 
     masApps = {};
   };

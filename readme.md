@@ -13,7 +13,7 @@ System configuration managed with [Nix](https://nixos.org/), [home-manager](http
 ## One-liner
 
 ```shell
-curl -Ls https://raw.githubusercontent.com/gtramontina/dotfilez/main/scripts/install.sh | bash
+curl -Ls https://raw.githubusercontent.com/gtramontina/dotfiles/main/scripts/install.sh | bash
 ```
 
 The installer is interactive and idempotent. It clones the repo, asks for hostname/profile/git identity, and applies the configuration.
@@ -29,9 +29,15 @@ make update
 
 # Build without applying
 make build
+
+# Format all nix and shell files (alejandra + shfmt via treefmt)
+make fmt
+
+# Lint: formatting + shellcheck (also runs as part of `nix flake check`)
+make check
 ```
 
-`make switch` detects the OS and hostname automatically, selecting the right flake target.
+`make switch` detects the OS and hostname automatically, selecting the right flake target. `make check` builds every flake check (treefmt diff + shellcheck); both run automatically when using `nix flake check`.
 
 ## Structure
 
@@ -73,6 +79,11 @@ make build
 - **Host** (which machine) — each host file composes `modules/home` (shared core) + a profile + platform-specific modules. Hostnames match flake config names for auto-detection.
 
 **Shared core:** All hosts share the same `modules/home/` configuration. Platform guards within each module handle OS-specific behavior. A change to any shared module applies to all machines on next `make switch`.
+
+## Testing
+
+- `nix flake check` (or `make check`) runs `checks.<system>.treefmt` — formats and fails with a diff if files aren't treefmt-clean — and `checks.<system>.shellcheck` over `scripts/*.sh`.
+- `nix fmt` (or `make fmt`) formats everything via the treefmt wrapper (alejandra for Nix, shfmt for shell).
 
 ## Adding a new machine
 

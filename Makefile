@@ -2,7 +2,7 @@ HOST := $(shell hostname -s)
 SYSTEM := $(shell uname -s)
 USER := $(shell whoami)
 
-.PHONY: switch build update help
+.PHONY: switch build update fmt check test help
 
 switch: ## Apply configuration
 ifeq ($(SYSTEM),Darwin)
@@ -21,6 +21,14 @@ endif
 update: ## Update flake inputs and apply
 	nix flake update
 	$(MAKE) switch
+
+fmt: ## Format all nix and shell files
+	nix fmt
+
+check: ## Run all checks (treefmt + shellcheck)
+	nix flake check
+
+test: check ## Alias for check
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

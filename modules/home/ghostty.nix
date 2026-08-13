@@ -7,7 +7,10 @@
     enable = true;
     enableZshIntegration = true;
 
-    package = if pkgs.stdenv.isDarwin then null else pkgs.ghostty;
+    package =
+      if pkgs.stdenv.isDarwin
+      then null
+      else pkgs.ghostty;
 
     settings = {
       background-opacity = 0.9;

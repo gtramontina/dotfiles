@@ -11,6 +11,9 @@
     hunk.url = "github:modem-dev/hunk";
     hunk.inputs.nixpkgs.follows = "nixpkgs";
 
+    identity.url = "path:./identity";
+    identity.flake = false;
+
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -25,6 +28,18 @@
   }: let
     systems = ["aarch64-darwin" "x86_64-linux"];
     eachSystem = nixpkgs.lib.genAttrs systems;
+
+    identity = import inputs.identity;
+    identityFor = system:
+      identity
+      // {
+        homeDirectory =
+          if identity.homeDirectory != null
+          then identity.homeDirectory
+          else if nixpkgs.lib.hasSuffix "-darwin" system
+          then "/Users/${identity.username}"
+          else "/home/${identity.username}";
+      };
 
     mkTreefmt = system: let
       pkgs = nixpkgs.legacyPackages.${system};
@@ -41,7 +56,11 @@
     in
       pkgs.mkShell {
         packages = [
+          pkgs.actionlint
           pkgs.alejandra
+          pkgs.expect
+          pkgs.gnumake
+          pkgs.rsync
           pkgs.shfmt
           pkgs.shellcheck
           pkgs.git
@@ -52,46 +71,70 @@
 
     mkChecks = system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      scripts = nixpkgs.lib.fileset.toSource {
+      shellSources = nixpkgs.lib.fileset.toSource {
         root = ./.;
-        fileset = nixpkgs.lib.fileset.unions [./scripts];
+        fileset = nixpkgs.lib.fileset.unions [./scripts ./tests];
       };
     in {
+      actionlint =
+        pkgs.runCommand "dotfilez-actionlint" {
+          nativeBuildInputs = [pkgs.actionlint];
+        } ''
+          cd ${self}
+          actionlint .github/workflows/*.yml
+          touch $out
+        '';
       treefmt = (mkTreefmt system).build.check self;
       shellcheck =
         pkgs.runCommand "dotfilez-shellcheck" {
           nativeBuildInputs = [pkgs.shellcheck];
         } ''
-          cd ${scripts}/scripts
-          shellcheck ./*.sh
+          cd ${shellSources}
+          shellcheck scripts/*.sh tests/*.sh tests/fixtures/commands/* tests/fixtures/old-nix/*
           touch $out
         '';
     };
 
-    mkDarwin = system: profile: hostname:
+    mkDarwin = system: profile: hostname: let
+      identity = identityFor system;
+    in
       darwin.lib.darwinSystem {
         inherit system;
-        specialArgs = {inherit inputs profile;};
+        specialArgs = {
+          inherit identity profile;
+        };
         modules = [
           ./modules/darwin.nix
           ./modules/homebrew.nix
           home-manager.darwinModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
-            home-manager.extraSpecialArgs = {inherit inputs profile;};
-            home-manager.users.gtramontina.imports = [./hosts/${hostname}.nix];
+            home-manager.extraSpecialArgs = {
+              inherit identity inputs profile;
+            };
+            home-manager.users.${identity.username}.imports = [
+              ./modules/profiles
+              ./hosts/${hostname}.nix
+            ];
           }
         ];
       };
 
-    mkHome = system: profile: hostname:
+    mkHome = system: profile: hostname: let
+      identity = identityFor system;
+    in
       home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
         };
-        extraSpecialArgs = {inherit inputs profile;};
-        modules = [./hosts/${hostname}.nix];
+        extraSpecialArgs = {
+          inherit identity inputs profile;
+        };
+        modules = [
+          ./modules/profiles
+          ./hosts/${hostname}.nix
+        ];
       };
   in {
     formatter = eachSystem (system: (mkTreefmt system).build.wrapper);
@@ -104,7 +147,7 @@
     };
 
     homeConfigurations = {
-      "gtramontina@cygnus" = mkHome "x86_64-linux" "personal" "cygnus";
+      "${identity.username}@cygnus" = mkHome "x86_64-linux" "personal" "cygnus";
     };
   };
 }

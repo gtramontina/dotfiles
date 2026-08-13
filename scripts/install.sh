@@ -4,20 +4,25 @@ set -eo pipefail
 
 repository="https://github.com/gtramontina/dotfiles"
 directory="${DOTFILES_DIR:-$HOME/.dotfilez}"
+identity_default_file="identity/default.nix"
+identity_override_directory="identity.override"
+identity_override_file="$identity_override_directory/default.nix"
+repository_marker=".dotfiles-root"
 
 function main() {
-  if [[ -d "$directory/.git" ]]; then
-    log::info "Repo already exists at '$directory', fetching updates…"
-    cd "$directory"
-    git fetch origin main --quiet
-    git reset --hard origin/main --quiet
+  if git -C "$directory" rev-parse --is-inside-work-tree &>/dev/null; then
+    validate_repository
+    log::info "Using existing repository at '$directory'."
+    update_repository
   else
     log::info "Cloning repository…"
     mkdir -p "$directory"
     git clone "$repository" "$directory"
-    cd "$directory"
-    trap 'link_to_git' EXIT
   fi
+  cd "$directory"
+
+  [[ -f $repository_marker && -f $identity_default_file && -f flake.nix && -f Makefile ]] ||
+    die "Repository checkout is outdated or invalid. Update '$directory' and run the installer again."
 
   local os
   os=$(uname -s)
@@ -30,110 +35,243 @@ function main() {
     log::error "No configuration found for host '$current_host'."
     echo
     echo "To add this machine:"
-    echo "  1. Create hosts/${current_host}.nix (copy an existing host file, adjust profile)"
-    echo "  2. Add an entry to flake.nix (mkDarwin or mkHome)"
+    echo "  1. Create hosts/${current_host}.nix (copy an existing host file)"
+    echo "  2. Add an entry to flake.nix (mkDarwin or mkHome, with its profile)"
     echo "  3. Commit and push"
     echo
     echo "Then run this installer again."
     exit 1
   fi
 
+  if ! command -v nix &>/dev/null; then
+    install_nix
+    return 0
+  fi
+  require_supported_nix
+
   configure "$current_host"
 }
 
 function configure() {
   local hostname="$1"
-  local existing_profile
-  existing_profile="$(detect_profile "$hostname")"
+
+  local identity_file="$identity_default_file"
+  local has_override=false
+  if [[ -f $identity_override_file ]]; then
+    identity_file="$identity_override_file"
+    has_override=true
+  fi
+
+  local username
+  local home_directory
+  local full_name
+  local personal_email
+  local work_email
+  local personal_signing_key
+  local work_signing_key
+  username="$(id -un)"
+  home_directory="$HOME"
+  full_name="$(identity_get "$identity_file" fullName)"
+  personal_email="$(identity_get "$identity_file" profiles.personal.email)"
+  work_email="$(identity_get "$identity_file" profiles.work.email)"
+  personal_signing_key="$(identity_get "$identity_file" profiles.personal.signingKey)"
+  work_signing_key="$(identity_get "$identity_file" profiles.work.signingKey)"
+
+  if [[ $has_override == false ]]; then
+    local global_name
+    local global_email
+    local global_signing_key
+    global_name="$(git config --global user.name 2>/dev/null || true)"
+    global_email="$(git config --global user.email 2>/dev/null || true)"
+    global_signing_key="$(git config --global user.signingkey 2>/dev/null || true)"
+
+    full_name="$global_name"
+    personal_email="$global_email"
+    work_email="$personal_email"
+    personal_signing_key="$global_signing_key"
+    work_signing_key="$personal_signing_key"
+  fi
 
   echo
   echo "── Configuration ──────────────────────────────"
   log::info "Machine:  $hostname"
-  log::info "Profile:  $existing_profile"
   echo
 
-  local profile="$existing_profile"
-  local profile_default=1
-  [[ $profile == "work" ]] && profile_default=2
-  echo "Profile:"
-  echo "  (1) personal"
-  echo "  (2) work"
-  read -rp "Confirm [$profile_default]: " profile_choice
-  case "$profile_choice" in
-  2) profile="work" ;;
-  1) profile="personal" ;;
-  *) profile="$([[ $profile_default -eq 2 ]] && echo work || echo personal)" ;;
-  esac
+  full_name="$(prompt_value "Full name" "$full_name")"
+  personal_email="$(prompt_value "Personal email" "$personal_email")"
+  work_email="$(prompt_value "Work email" "$work_email")"
+  personal_signing_key="$(prompt_value "Personal signing key" "$personal_signing_key" true)"
+  work_signing_key="$(prompt_value "Work signing key" "$work_signing_key" true)"
 
-  local git_name
-  local git_email
-  git_name="$(git_identity "$profile" name)"
-  git_email="$(git_identity "$profile" email)"
-
-  read -rp "Git name [$git_name]: " input_name
-  git_name="${input_name:-$git_name}"
-  read -rp "Git email [$git_email]: " input_email
-  git_email="${input_email:-$git_email}"
+  validate_identity "$home_directory" "$full_name" "$personal_email" "$work_email" \
+    "$personal_signing_key" "$work_signing_key"
 
   echo
   echo "Summary:"
-  echo "  Hostname:  $hostname"
-  echo "  Profile:   $profile"
-  echo "  Git name:  $git_name"
-  echo "  Git email: $git_email"
+  echo "  Hostname:             $hostname"
+  echo "  Login username:       $username"
+  echo "  Home directory:       $home_directory"
+  echo "  Full name:            $full_name"
+  echo "  Personal email:       $personal_email"
+  echo "  Work email:           $work_email"
+  echo "  Personal signing key: ${personal_signing_key:-none}"
+  echo "  Work signing key:     ${work_signing_key:-none}"
   echo
   confirm "Apply this configuration?" || exit 0
 
-  setup
-}
-
-function detect_profile() {
-  local hostname="$1"
-  local host_file="hosts/${hostname}.nix"
-  local p
-  p="$(grep -o 'profiles/[a-z]*' "$host_file" | head -1)"
-  [[ -n $p ]] && p="${p#profiles/}"
-  echo "${p:-personal}"
-}
-
-function git_identity() {
-  local profile="$1"
-  local field="$2"
-  local profile_file="modules/profiles/${profile}.nix"
-  local value
-  value="$(grep -o 'email = "[^"]*"' "$profile_file" 2>/dev/null | head -1 | sed 's/.*"\(.*\)"/\1/')"
-  if [[ $field == "name" ]]; then
-    value="$(grep -o 'name = "[^"]*"' "$profile_file" 2>/dev/null | head -1 | sed 's/.*"\(.*\)"/\1/')"
-  fi
-  echo "${value:-}"
-}
-
-function setup() {
-  if ! command -v nix &>/dev/null; then
-    log::info "Installing Nix…"
-    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-    log::info "Nix installed successfully."
-    log::warn "⚠️ Start a new shell and run this script again!"
-    return 0
-  fi
-
+  write_identity_override "$username" "$home_directory" "$full_name" "$personal_email" "$work_email" \
+    "$personal_signing_key" "$work_signing_key"
   make switch
 }
 
-function link_to_git() {
-  local dir
-  dir="$(pwd)"
+function identity_get() {
+  local file="$1"
+  local attribute="$2"
+  nix eval --raw --file "$file" "$attribute"
+}
 
-  if [[ -n "$(command -v git)" ]] && [[ ! -d ".git" ]]; then
-    log::info "Linking '$dir' to '$repository'…"
-    git init
-    git remote add origin "$repository.git"
-    git fetch origin
-    git reset --hard origin/main
+function update_repository() {
+  if ! git -C "$directory" diff --quiet || ! git -C "$directory" diff --cached --quiet; then
+    log::warn "Repository has local changes; skipping automatic update."
+    return
+  fi
+
+  if ! git -C "$directory" rev-parse --verify '@{upstream}' &>/dev/null; then
+    return
+  fi
+
+  if ! git -C "$directory" pull --ff-only --quiet; then
+    log::warn "Could not fast-forward the repository; using the current checkout."
   fi
 }
 
-function usage() { echo -e "Usage: $(basename "$0")"; }
+function validate_repository() {
+  local origin
+  [[ -f "$directory/$repository_marker" ]] && return
+
+  origin="$(git -C "$directory" remote get-url origin 2>/dev/null || true)"
+  [[ $origin =~ (^|[/:])dotfiles(\.git)?$ ]] ||
+    die "'$directory' is a different Git repository; choose another DOTFILES_DIR."
+}
+
+function prompt_value() {
+  local label="$1"
+  local current="$2"
+  local clearable="${3:-false}"
+  local input
+  local clear_hint=""
+  [[ $clearable == true ]] && clear_hint=" (- to clear)"
+
+  read -rp "$label [${current:-none}]$clear_hint: " input </dev/tty ||
+    die "An interactive terminal is required."
+  if [[ $clearable == true && $input == "-" ]]; then
+    printf '\n'
+    return
+  fi
+  printf '%s\n' "${input:-$current}"
+}
+
+function validate_identity() {
+  local home_directory="$1"
+  local full_name="$2"
+  local personal_email="$3"
+  local work_email="$4"
+  local personal_signing_key="$5"
+  local work_signing_key="$6"
+
+  [[ $home_directory == /* ]] || die "Home directory must be an absolute path."
+  [[ -n $full_name ]] || die "Full name cannot be empty."
+  validate_email "$personal_email" "personal"
+  validate_email "$work_email" "work"
+  validate_signing_key "$personal_signing_key" "personal"
+  validate_signing_key "$work_signing_key" "work"
+}
+
+function validate_email() {
+  local email="$1"
+  local profile="$2"
+  [[ $email =~ ^[^[:space:]@]+@[^[:space:]@]+$ ]] || die "Invalid $profile email '$email'."
+}
+
+function validate_signing_key() {
+  local key="$1"
+  local profile="$2"
+  [[ -z $key || $key =~ ^(0[xX])?([[:xdigit:]]{16}|[[:xdigit:]]{40}|[[:xdigit:]]{64})!?$ ]] ||
+    die "Invalid $profile signing key. Use a 16-, 40-, or 64-character OpenPGP key ID."
+}
+
+function require_supported_nix() {
+  local version
+  local major
+  local minor
+  version="$(nix --version)"
+  if [[ ! $version =~ ([0-9]+)\.([0-9]+)(\.[0-9]+)?$ ]]; then
+    die "Could not determine the installed Nix version from '$version'."
+  fi
+
+  major="${BASH_REMATCH[1]}"
+  minor="${BASH_REMATCH[2]}"
+  if ((major < 2 || (major == 2 && minor < 26))); then
+    die "Nix 2.26 or newer is required (found $version). Upgrade Nix and run the installer again."
+  fi
+}
+
+function write_identity_override() {
+  local username="$1"
+  local home_directory="$2"
+  local full_name="$3"
+  local personal_email="$4"
+  local work_email="$5"
+  local personal_signing_key="$6"
+  local work_signing_key="$7"
+  local temporary_file
+
+  mkdir -p "$identity_override_directory"
+  temporary_file="$(mktemp "$identity_override_directory/.default.nix.XXXXXX")"
+  trap 'rm -f "$temporary_file"' EXIT
+
+  if ! IDENTITY_USERNAME="$username" \
+    IDENTITY_HOME_DIRECTORY="$home_directory" \
+    IDENTITY_FULL_NAME="$full_name" \
+    IDENTITY_PERSONAL_EMAIL="$personal_email" \
+    IDENTITY_WORK_EMAIL="$work_email" \
+    IDENTITY_PERSONAL_SIGNING_KEY="$personal_signing_key" \
+    IDENTITY_WORK_SIGNING_KEY="$work_signing_key" \
+    nix eval --impure --raw --expr '
+      let
+        flake = builtins.getFlake (toString ./.);
+        env = builtins.getEnv;
+      in
+        flake.inputs.nixpkgs.lib.generators.toPretty {} {
+          username = env "IDENTITY_USERNAME";
+          homeDirectory = env "IDENTITY_HOME_DIRECTORY";
+          fullName = env "IDENTITY_FULL_NAME";
+          profiles = {
+            personal = {
+              email = env "IDENTITY_PERSONAL_EMAIL";
+              signingKey = env "IDENTITY_PERSONAL_SIGNING_KEY";
+            };
+            work = {
+              email = env "IDENTITY_WORK_EMAIL";
+              signingKey = env "IDENTITY_WORK_SIGNING_KEY";
+            };
+          };
+        }
+    ' >"$temporary_file"; then
+    die "Could not generate the local identity."
+  fi
+
+  mv "$temporary_file" "$identity_override_file"
+  trap - EXIT
+  log::info "Saved local identity to '$directory/$identity_override_file'."
+}
+
+function install_nix() {
+  log::info "Installing Nix…"
+  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+  log::info "Nix installed successfully."
+  log::warn "⚠️ Start a new shell and run this script again!"
+}
 
 function color::reset() { echo -e "$1\033[0m"; }
 function color::red() { echo -e "\033[0;31m$(color::reset "$1")"; }
@@ -144,7 +282,15 @@ function log::log() { echo "[$(date +'%Y-%m-%dT%H:%M:%S')] $1"; }
 function log::error() { log::log "$(color::red "$1")" >&2; }
 function log::warn() { log::log "$(color::yellow "$1")" >&2; }
 function log::info() { log::log "$(color::blue "$1")"; }
-function confirm() { read -r -p "$(log::log "$(color::bold "$1")") [y/N] " response </dev/tty && [[ $response == "y" ]]; }
-function die() { log::error "$1" && exit "${2:-1}"; }
+function confirm() {
+  local response
+  read -r -p "$(log::log "$(color::bold "$1")") [y/N] " response </dev/tty ||
+    die "An interactive terminal is required."
+  [[ $response =~ ^[Yy]$ ]]
+}
+function die() {
+  log::error "$1"
+  exit "${2:-1}"
+}
 
 main "$@"

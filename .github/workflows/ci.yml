@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            runner: ubuntu-24.04
+          - name: macOS
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31.11.0
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test
+        run: make test
+
+      - name: Evaluate all systems
+        run: nix flake check --all-systems --no-build
+
+      - name: Build Linux configuration
+        if: runner.os == 'Linux'
+        run: nix build '.#homeConfigurations."gtramontina@cygnus".activationPackage'
+
+      - name: Build macOS configurations
+        if: runner.os == 'macOS'
+        run: nix build .#darwinConfigurations.orion.system .#darwinConfigurations.phoenix.system

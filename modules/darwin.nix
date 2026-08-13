@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{
+  identity,
+  pkgs,
+  ...
+}: let
+  inherit (identity) username;
+in {
   nixpkgs.config.allowUnfree = true;
 
   nix = {
@@ -18,10 +24,9 @@
     pkgs.departure-mono
   ];
 
-  users.users.gtramontina = {
-    home = "/Users/gtramontina";
-    uid = 501;
-    description = "Guilherme J. Tramontina";
+  users.users.${username} = {
+    home = identity.homeDirectory;
+    description = identity.fullName;
   };
 
   networking = {
@@ -34,7 +39,7 @@
 
   system = {
     stateVersion = 6;
-    primaryUser = "gtramontina";
+    primaryUser = username;
 
     keyboard = {
       enableKeyMapping = true;

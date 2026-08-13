@@ -13,10 +13,6 @@
     enable = true;
 
     settings = {
-      user = {
-        name = "Guilherme J. Tramontina";
-      };
-
       alias = {
         lg = "log --graph --date=format:'%Y-%m-%d %H:%I' --pretty=format:'%C(bold yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%<(18,trunc)%aE%C(reset) %C(reset)%s%C(reset)%C(bold red)%d%C(reset)'";
         st = "status --short";
@@ -47,12 +43,6 @@
       fetch = {
         prune = true;
       };
-    };
-
-    signing = {
-      signByDefault = true;
-      key = "04D8737E49D558DE";
-      format = null;
     };
   };
 }

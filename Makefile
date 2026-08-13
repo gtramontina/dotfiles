@@ -1,21 +1,22 @@
 HOST := $(shell hostname -s)
 SYSTEM := $(shell uname -s)
 USER := $(shell whoami)
+IDENTITY_ARGS := $(if $(wildcard identity.override/default.nix),--override-input identity path:./identity.override)
 
 .PHONY: switch build update fmt check test help
 
 switch: ## Apply configuration
 ifeq ($(SYSTEM),Darwin)
-	darwin-rebuild switch --flake .#$(HOST)
+	darwin-rebuild switch --flake .#$(HOST) $(IDENTITY_ARGS)
 else
-	home-manager switch --flake .#$(USER)@$(HOST)
+	home-manager switch --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
 endif
 
 build: ## Build without applying
 ifeq ($(SYSTEM),Darwin)
-	darwin-rebuild build --flake .#$(HOST)
+	darwin-rebuild build --flake .#$(HOST) $(IDENTITY_ARGS)
 else
-	home-manager build --flake .#$(USER)@$(HOST)
+	home-manager build --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
 endif
 
 update: ## Update flake inputs and apply
@@ -25,10 +26,11 @@ update: ## Update flake inputs and apply
 fmt: ## Format all nix and shell files
 	nix fmt
 
-check: ## Run all checks (treefmt + shellcheck)
-	nix flake check
+check: ## Run all checks (actionlint + treefmt + shellcheck)
+	nix flake check $(IDENTITY_ARGS)
 
-test: check ## Alias for check
+test: check ## Run checks and behavior tests
+	nix develop $(IDENTITY_ARGS) -c ./tests/run.sh
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

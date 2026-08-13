@@ -17,7 +17,7 @@
 
     extraConfig = ''
       cask_args require_sha: true
-      cask_args appdir: "${builtins.getEnv "HOME"}/Applications"
+      cask_args appdir: "${config.system.primaryUserHome}/Applications"
     '';
 
     taps = [];

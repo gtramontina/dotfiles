@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ "${1:-}" = "-un" ]; then
+  printf '%s\n' "${TEST_USERNAME:?}"
+  exit 0
+fi
+
+exec /usr/bin/id "$@"

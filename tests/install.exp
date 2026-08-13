@@ -1,0 +1,44 @@
+#!/usr/bin/expect -f
+
+set timeout 120
+set mode [lindex $argv 0]
+set installer [lindex $argv 1]
+
+proc answer {pattern response} {
+  expect {
+    -re $pattern { send -- "$response\r" }
+    timeout {
+      puts stderr "Timed out waiting for installer prompt: $pattern"
+      exit 1
+    }
+    eof {
+      puts stderr "Installer exited before prompt: $pattern"
+      exit 1
+    }
+  }
+}
+
+spawn bash $installer
+
+if {$mode eq "first"} {
+  answer {Full name \[.*\]: $} {Jane "Q" \ Tester}
+  answer {Personal email \[.*\]: $} {jane@example.com}
+  answer {Work email \[.*\]: $} {jane@work.example.com}
+  answer {Personal signing key \[.*\] \(- to clear\): $} {-}
+  answer {Work signing key \[.*\] \(- to clear\): $} {0xAAAAAAAAAAAAAAAA!}
+} elseif {$mode eq "rerun"} {
+  answer {Full name \[.*\]: $} {}
+  answer {Personal email \[.*\]: $} {}
+  answer {Work email \[.*\]: $} {}
+  answer {Personal signing key \[.*\] \(- to clear\): $} {}
+  answer {Work signing key \[.*\] \(- to clear\): $} {}
+} else {
+  puts stderr "Unknown installer test mode: $mode"
+  exit 1
+}
+
+answer {Apply this configuration.*\[y/N\] $} {y}
+expect eof
+
+set wait_status [wait]
+exit [lindex $wait_status 3]

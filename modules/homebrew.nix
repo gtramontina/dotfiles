@@ -47,7 +47,7 @@
         "zed@preview"
         "ghostty"
         "signal"
-        "tailscale"
+        "tailscale-app"
         "stremio"
       ]
       ++ lib.optionals (profile == "work") [

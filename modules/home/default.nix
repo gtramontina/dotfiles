@@ -33,7 +33,7 @@
     ./ghostty.nix
     ./git.nix
     ./gpg.nix
-    # ./hunk.nix
+    ./hunk.nix
     # ./vscode.nix
     ./opencode.nix
     ./zsh.nix

@@ -26,6 +26,7 @@
         "dot:fmt" = "make -C \"$DOTFILES_DIR\" fmt";
         "dot:help" = "make -C \"$DOTFILES_DIR\" help";
         "dot:nix-upgrade" = "make -C \"$DOTFILES_DIR\" nix-upgrade";
+        "dot:sync" = "\"$DOTFILES_DIR/scripts/sync\"";
         "dot:switch" = "make -C \"$DOTFILES_DIR\" switch";
         "dot:test" = "make -C \"$DOTFILES_DIR\" test";
         "dot:update" = "\"$DOTFILES_DIR/scripts/update\"";

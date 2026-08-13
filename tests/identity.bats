@@ -134,6 +134,9 @@ function dot_aliases_follow_the_persisted_checkout { #@test
   assert_override_raw "/srv/config/dotfiles" \
     .#darwinConfigurations.orion.config.home-manager.users.colleague.home.sessionVariables.DOTFILES_DIR
   # shellcheck disable=SC2016
+  assert_raw '"$DOTFILES_DIR/scripts/sync"' \
+    '.#darwinConfigurations.orion.config.home-manager.users.gtramontina.programs.zsh.shellAliases."dot:sync"'
+  # shellcheck disable=SC2016
   assert_raw '"$DOTFILES_DIR/scripts/update"' \
     '.#darwinConfigurations.orion.config.home-manager.users.gtramontina.programs.zsh.shellAliases."dot:update"'
   # shellcheck disable=SC2016

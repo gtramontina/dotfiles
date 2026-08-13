@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -eo pipefail
+
+directory="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$directory"
+
+if [[ ${DOTFILES_SYNC_APPLY:-0} == 1 ]]; then
+  unset DOTFILES_SYNC_APPLY
+  exec make switch
+fi
+
+if [[ -n $(git status --porcelain) ]]; then
+  echo "Cannot sync: '$directory' has uncommitted changes." >&2
+  exit 1
+fi
+
+git pull --ff-only
+DOTFILES_SYNC_APPLY=1 exec "$directory/scripts/sync"

@@ -66,7 +66,7 @@
           pkgs.git
           (mkTreefmt system).build.wrapper
         ];
-        shellHook = "echo '💻 dotfilez dev shell — `make check` to lint, `make fmt` to format'";
+        shellHook = "echo '💻 dotfiles dev shell — `make check` to lint, `make fmt` to format'";
       };
 
     mkChecks = system: let
@@ -77,7 +77,7 @@
       };
     in {
       actionlint =
-        pkgs.runCommand "dotfilez-actionlint" {
+        pkgs.runCommand "dotfiles-actionlint" {
           nativeBuildInputs = [pkgs.actionlint];
         } ''
           cd ${self}
@@ -86,7 +86,7 @@
         '';
       treefmt = (mkTreefmt system).build.check self;
       shellcheck =
-        pkgs.runCommand "dotfilez-shellcheck" {
+        pkgs.runCommand "dotfiles-shellcheck" {
           nativeBuildInputs = [pkgs.shellcheck];
         } ''
           cd ${shellSources}

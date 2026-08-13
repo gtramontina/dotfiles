@@ -3,7 +3,7 @@
 set -eo pipefail
 
 repository="https://github.com/gtramontina/dotfiles"
-directory="${DOTFILES_DIR:-$HOME/.dotfilez}"
+directory="${DOTFILES_DIR:-$HOME/.dotfiles}"
 identity_default_file="identity/default.nix"
 identity_override_directory="identity.override"
 identity_override_file="$identity_override_directory/default.nix"

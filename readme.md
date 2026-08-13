@@ -1,4 +1,4 @@
-# .dotfilez
+# .dotfiles
 
 System configuration managed with [Nix](https://nixos.org/), [home-manager](https://github.com/nix-community/home-manager), and [nix-darwin](https://github.com/LnL7/nix-darwin).
 

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -eo pipefail
+
+directory="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$directory"
+
+if [[ -n $(git status --porcelain) ]]; then
+  echo "Cannot update: '$directory' has uncommitted changes." >&2
+  exit 1
+fi
+
+make update
+
+if ! git diff --quiet -- . ':(exclude)flake.lock' ||
+  [[ -n $(git ls-files --others --exclude-standard) ]]; then
+  echo "Update produced changes beyond flake.lock; review the worktree before committing." >&2
+  exit 1
+fi
+
+if git diff --quiet -- flake.lock; then
+  echo "Flake inputs are already up to date."
+  exit 0
+fi
+
+git diff --stat -- flake.lock
+printf 'Commit and push updated flake inputs? [y/N] '
+read -r reply || reply=""
+
+case "$reply" in
+  y | Y)
+    git add -- flake.lock
+    git commit -m "chore: update flake inputs"
+    git push
+    ;;
+esac

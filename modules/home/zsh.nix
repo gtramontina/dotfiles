@@ -28,7 +28,7 @@
         "dot:nix-upgrade" = "make -C \"$DOTFILES_DIR\" nix-upgrade";
         "dot:switch" = "make -C \"$DOTFILES_DIR\" switch";
         "dot:test" = "make -C \"$DOTFILES_DIR\" test";
-        "dot:update" = "make -C \"$DOTFILES_DIR\" update";
+        "dot:update" = "\"$DOTFILES_DIR/scripts/update\"";
       };
       initContent = lib.optionalString pkgs.stdenv.isDarwin ''
         eval "$(/opt/homebrew/bin/brew shellenv)"

@@ -58,6 +58,8 @@ make test
 
 After switching, the same commands are available from any directory as `dot:*` Zsh aliases: `dot:update`, `dot:switch`, `dot:build`, `dot:check`, `dot:test`, `dot:fmt`, `dot:clean`, and `dot:nix-upgrade`. `dot:edit` opens the persisted `DOTFILES_DIR` in `$EDITOR`; `dot:help` lists the Make targets.
 
+`dot:update` requires a clean worktree, then runs `make update`. When `flake.lock` changes and all checks and builds pass, it shows the change and asks whether to commit and push it. Declining leaves the lock file uncommitted for review; push failures leave the new commit safely available locally.
+
 ## Structure
 
 ```

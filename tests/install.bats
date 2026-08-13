@@ -27,6 +27,13 @@ EOF
   chmod +x "$repository/scripts/setup"
 }
 
+function interactive_helper_resolves_expect_from_path { #@test
+  local shebang
+  IFS= read -r shebang <"$root/tests/helpers/install-interactive"
+
+  assert_equal "$shebang" "#!/usr/bin/env expect"
+}
+
 function piped_installer_delegates_to_the_checked_out_setup { #@test
   export DOTFILES_DIR="$repository"
   export TEST_SETUP_LOG="$setup_log"

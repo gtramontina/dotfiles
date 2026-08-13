@@ -5,8 +5,6 @@
 }: {
   home = {
     stateVersion = "23.11";
-    username = "gtramontina";
-    homeDirectory = "/Users/gtramontina";
 
     sessionVariables = {
       EDITOR = "vim";
@@ -32,7 +30,7 @@
     ./ghostty.nix
     ./git.nix
     ./gpg.nix
-    ./hunk.nix
+    # ./hunk.nix
     # ./vscode.nix
     ./opencode.nix
     ./zsh.nix

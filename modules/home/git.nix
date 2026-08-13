@@ -15,7 +15,6 @@
     settings = {
       user = {
         name = "Guilherme J. Tramontina";
-        email = "guilherme.tramontina@gmail.com";
       };
 
       alias = {

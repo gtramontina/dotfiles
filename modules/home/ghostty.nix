@@ -7,9 +7,7 @@
     enable = true;
     enableZshIntegration = true;
 
-    # Ghostty does not yet build on macOS, but a pre-built binary can be installed via Homebrew.
-    # And this is what I'm doing: installing with Homebrew.
-    package = null;
+    package = if pkgs.stdenv.isDarwin then null else pkgs.ghostty;
 
     settings = {
       background-opacity = 0.9;

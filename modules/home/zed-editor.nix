@@ -6,9 +6,7 @@
   programs.zed-editor = {
     enable = true;
 
-    # I'm using Zed Preview (installed via homebrew). This is only to keep the
-    # dotfiles tracked with nix.
-    package = null;
+    package = if pkgs.stdenv.isDarwin then null else pkgs.zed-editor;
 
     extraPackages = [
       # pkgs.nixd

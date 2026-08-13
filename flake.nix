@@ -12,68 +12,41 @@
     hunk.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs @ {
-    self,
-    darwin,
-    home-manager,
-    nixpkgs,
-    # nix-vscode-extensions,
-    ...
-  }: {
-    darwinConfigurations = {
-      gtramontina = darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
-        modules = [
-          ./darwin
-          home-manager.darwinModules.home-manager
-          ./homebrew
-        ];
-      };
-      gtramontina-work = darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
-        modules = [
-          ./darwin
-          home-manager.darwinModules.home-manager
-          ./homebrew
-        ];
-      };
-    };
-
-    homeConfigurations = {
-      gtramontina = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs {
-          system = "aarch64-darwin";
-          config.allowBroken = true;
-          config.allowUnfree = true;
-          config.enableCgo = true;
+  outputs = inputs@{ self, darwin, home-manager, nixpkgs, ... }:
+    let
+      mkDarwin = system: profile: hostname:
+        darwin.lib.darwinSystem {
+          inherit system;
+          specialArgs = { inherit inputs profile; };
+          modules = [
+            ./modules/darwin.nix
+            ./modules/homebrew.nix
+            home-manager.darwinModules.home-manager
+            {
+              home-manager.extraSpecialArgs = { inherit inputs profile; };
+              home-manager.users.gtramontina.imports = [ ./hosts/${hostname}.nix ];
+            }
+          ];
         };
 
-        extraSpecialArgs = {inherit inputs;};
-        modules = [./home-manager];
-      };
-      gtramontina-work = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs {
-          system = "aarch64-darwin";
-          config.allowBroken = true;
-          config.allowUnfree = true;
-          config.enableCgo = true;
+      mkHome = system: profile: hostname:
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
+          extraSpecialArgs = { inherit inputs profile; };
+          modules = [ ./hosts/${hostname}.nix ];
         };
+    in
+    {
+      darwinConfigurations = {
+        orion = mkDarwin "aarch64-darwin" "personal" "orion";
+        phoenix = mkDarwin "aarch64-darwin" "work" "phoenix";
+      };
 
-        extraSpecialArgs = {inherit inputs;};
-        modules = [./home-manager];
+      homeConfigurations = {
+        "gtramontina@cygnus" = mkHome "x86_64-linux" "personal" "cygnus";
       };
     };
-
-    apps."aarch64-darwin".default = let
-      pkgs = nixpkgs.legacyPackages."aarch64-darwin";
-      init = pkgs.writeShellApplication {
-        name = "init";
-        runtimeInputs = with pkgs; [git curl bash];
-        text = builtins.readFile ./init.sh;
-      };
-    in {
-      type = "app";
-      program = "${init}/bin/init";
-    };
-  };
 }

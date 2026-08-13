@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  profile ? "personal",
   ...
 }: {
   homebrew = {
@@ -11,10 +12,6 @@
       upgrade = true;
       autoUpdate = true;
       cleanup = "zap";
-      # Homebrew Bundle now refuses `brew bundle install --cleanup` without an
-      # explicit confirmation flag (errors with "requires --force,
-      # --force-cleanup or $HOMEBREW_ASK"). nix-darwin doesn't add it
-      # automatically, so force the cleanup non-interactively here.
       extraFlags = ["--force-cleanup"];
     };
 
@@ -23,13 +20,11 @@
       cask_args appdir: "${builtins.getEnv "HOME"}/Applications"
     '';
 
-    taps = [
-    ];
+    taps = [];
 
     brews = [
       "gemini-cli"
       "mole"
-      # "direnv" # for some reason installing this via zsh isn't working.
       "herdr"
     ];
 
@@ -40,8 +35,6 @@
       "betterdisplay"
       "brave-browser"
       "handy"
-      # "blockblock"
-      # "knockknock"
       "little-snitch"
       "micro-snitch"
       "monodraw"
@@ -55,8 +48,7 @@
       "signal"
       "tailscale"
       "stremio"
-
-      # work
+    ] ++ lib.optionals (profile == "work") [
       "notion-calendar"
       "slack"
       "licecap"
@@ -64,11 +56,6 @@
       "pop-app"
     ];
 
-    masApps = {
-      # Dato = 1470584107;
-      # GoProPlayer_ReelSteady = 1460836908;
-      # XCode = 497799835;
-      # Cleaner_For_XCode = 1296084683;
-    };
+    masApps = {};
   };
 }

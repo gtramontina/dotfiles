@@ -1,13 +1,14 @@
 HOST := $(shell hostname -s)
 SYSTEM := $(shell uname -s)
 USER := $(shell whoami)
+NIX := $(shell command -v nix)
 IDENTITY_ARGS := $(if $(wildcard identity.override/default.nix),--override-input identity path:./identity.override)
 
 .PHONY: switch build update fmt check test help
 
 switch: ## Apply configuration
 ifeq ($(SYSTEM),Darwin)
-	nix run $(IDENTITY_ARGS) .#darwin-rebuild -- switch --flake .#$(HOST) $(IDENTITY_ARGS)
+	sudo --set-home $(NIX) run $(IDENTITY_ARGS) .#darwin-rebuild -- switch --flake .#$(HOST) $(IDENTITY_ARGS)
 else
 	nix run $(IDENTITY_ARGS) .#home-manager -- switch --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
 endif

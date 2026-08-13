@@ -94,6 +94,17 @@ function make_switch_bootstraps_the_platform_tool_through_nix { #@test
   assert_output --partial ".#$tool"
 }
 
+function darwin_switch_only_elevates_activation { #@test
+  run make --no-print-directory -n switch SYSTEM=Darwin HOST=phoenix
+  assert_success
+  assert_output --partial "sudo --set-home"
+  assert_output --partial ".#darwin-rebuild"
+
+  run make --no-print-directory -n build SYSTEM=Darwin HOST=phoenix
+  assert_success
+  refute_output --partial "sudo"
+}
+
 function direct_override_evaluation_does_not_change_the_lock_file { #@test
   local lock_before
   lock_before="$(git hash-object flake.lock)"

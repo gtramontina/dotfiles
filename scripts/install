@@ -1,0 +1,74 @@
+#!/bin/bash
+
+set -eo pipefail
+
+repository="https://github.com/gtramontina/dotfiles"
+repository_id="gtramontina/dotfiles"
+directory="${DOTFILES_DIR:-$HOME/.dotfiles}"
+repository_marker=".dotfiles-root"
+
+function main() {
+  if git -C "$directory" rev-parse --is-inside-work-tree &>/dev/null; then
+    validate_repository
+    log::info "Using existing repository at '$directory'."
+    update_repository
+  else
+    log::info "Cloning repository…"
+    mkdir -p "$directory"
+    git clone "$repository" "$directory"
+  fi
+
+  validate_checkout
+
+  exec "$directory/scripts/setup" "$@"
+}
+
+function validate_checkout() {
+  [[ -f "$directory/$repository_marker" && -x "$directory/scripts/setup" ]] ||
+    die "Repository checkout is outdated or invalid. Update '$directory' and run the installer again."
+  [[ $(<"$directory/$repository_marker") == "$repository_id" ]] ||
+    die "Repository marker in '$directory' does not match '$repository_id'."
+}
+
+function update_repository() {
+  if ! git -C "$directory" diff --quiet || ! git -C "$directory" diff --cached --quiet; then
+    log::warn "Repository has local changes; skipping automatic update."
+    return
+  fi
+
+  if ! git -C "$directory" rev-parse --verify '@{upstream}' &>/dev/null; then
+    return
+  fi
+
+  if ! git -C "$directory" pull --ff-only --quiet; then
+    log::warn "Could not fast-forward the repository; using the current checkout."
+  fi
+}
+
+function validate_repository() {
+  local origin
+  if [[ -f "$directory/$repository_marker" ]]; then
+    [[ $(<"$directory/$repository_marker") == "$repository_id" ]] ||
+      die "Repository marker in '$directory' does not match '$repository_id'."
+    return
+  fi
+
+  origin="$(git -C "$directory" remote get-url origin 2>/dev/null || true)"
+  [[ $origin =~ ^(https://github\.com/|git@github\.com:|ssh://git@github\.com/)gtramontina/dotfiles(\.git)?$ ]] ||
+    die "'$directory' is a different Git repository; choose another DOTFILES_DIR."
+}
+
+function color::reset() { echo -e "$1\033[0m"; }
+function color::red() { echo -e "\033[0;31m$(color::reset "$1")"; }
+function color::yellow() { echo -e "\033[0;33m$(color::reset "$1")"; }
+function color::blue() { echo -e "\033[0;34m$(color::reset "$1")"; }
+function log::log() { echo "[$(date +'%Y-%m-%dT%H:%M:%S')] $1"; }
+function log::error() { log::log "$(color::red "$1")" >&2; }
+function log::warn() { log::log "$(color::yellow "$1")" >&2; }
+function log::info() { log::log "$(color::blue "$1")"; }
+function die() {
+  log::error "$1"
+  exit "${2:-1}"
+}
+
+main "$@"

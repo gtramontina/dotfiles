@@ -18,7 +18,7 @@ proc answer {pattern response} {
   }
 }
 
-spawn bash $installer
+spawn /bin/bash -o pipefail -c {cat "$1" | /bin/bash} _ $installer
 
 if {$mode eq "first"} {
   answer {Full name \[.*\]: $} {Jane "Q" \ Tester}

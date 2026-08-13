@@ -48,16 +48,35 @@
         projectRootFile = "flake.nix";
         settings.global.excludes = ["./.git/**" "./.cache/**"];
         programs.alejandra.enable = true;
-        programs.shfmt.enable = true;
+        programs.shfmt = {
+          enable = true;
+          includes = [
+            "*.sh"
+            "*.bash"
+            "*.bats"
+            "*.envrc"
+            "*.envrc.*"
+            "scripts/install"
+            "scripts/setup"
+            "tests/fixtures/commands/*"
+            "tests/fixtures/old-nix/*"
+          ];
+        };
       }).config;
 
     mkDevShell = system: let
       pkgs = nixpkgs.legacyPackages.${system};
+      bats = pkgs.bats.withLibraries (libraries: [
+        libraries.bats-assert
+        libraries.bats-file
+        libraries.bats-support
+      ]);
     in
       pkgs.mkShell {
         packages = [
           pkgs.actionlint
           pkgs.alejandra
+          bats
           pkgs.expect
           pkgs.gnumake
           pkgs.rsync
@@ -90,7 +109,9 @@
           nativeBuildInputs = [pkgs.shellcheck];
         } ''
           cd ${shellSources}
-          shellcheck scripts/*.sh tests/*.sh tests/fixtures/commands/* tests/fixtures/old-nix/*
+          shellcheck scripts/install scripts/setup \
+            tests/fixtures/commands/* tests/fixtures/old-nix/*
+          shellcheck --shell=bash tests/*.bats
           touch $out
         '';
     };
@@ -140,6 +161,10 @@
     formatter = eachSystem (system: (mkTreefmt system).build.wrapper);
     devShells = eachSystem (system: {default = mkDevShell system;});
     checks = eachSystem mkChecks;
+    packages = eachSystem (system:
+      if nixpkgs.lib.hasSuffix "-darwin" system
+      then {darwin-rebuild = darwin.packages.${system}.darwin-rebuild;}
+      else {home-manager = home-manager.packages.${system}.home-manager;});
 
     darwinConfigurations = {
       orion = mkDarwin "aarch64-darwin" "personal" "orion";

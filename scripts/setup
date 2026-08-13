@@ -1,24 +1,12 @@
 #!/bin/bash
 
-set -eo pipefail
-
-repository="https://github.com/gtramontina/dotfiles"
-directory="${DOTFILES_DIR:-$HOME/.dotfiles}"
+directory="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 identity_default_file="identity/default.nix"
 identity_override_directory="identity.override"
 identity_override_file="$identity_override_directory/default.nix"
 repository_marker=".dotfiles-root"
 
 function main() {
-  if git -C "$directory" rev-parse --is-inside-work-tree &>/dev/null; then
-    validate_repository
-    log::info "Using existing repository at '$directory'."
-    update_repository
-  else
-    log::info "Cloning repository…"
-    mkdir -p "$directory"
-    git clone "$repository" "$directory"
-  fi
   cd "$directory"
 
   [[ -f $repository_marker && -f $identity_default_file && -f flake.nix && -f Makefile ]] ||
@@ -45,7 +33,7 @@ function main() {
 
   if ! command -v nix &>/dev/null; then
     install_nix
-    return 0
+    activate_nix
   fi
   require_supported_nix
 
@@ -128,30 +116,6 @@ function identity_get() {
   local file="$1"
   local attribute="$2"
   nix eval --raw --file "$file" "$attribute"
-}
-
-function update_repository() {
-  if ! git -C "$directory" diff --quiet || ! git -C "$directory" diff --cached --quiet; then
-    log::warn "Repository has local changes; skipping automatic update."
-    return
-  fi
-
-  if ! git -C "$directory" rev-parse --verify '@{upstream}' &>/dev/null; then
-    return
-  fi
-
-  if ! git -C "$directory" pull --ff-only --quiet; then
-    log::warn "Could not fast-forward the repository; using the current checkout."
-  fi
-}
-
-function validate_repository() {
-  local origin
-  [[ -f "$directory/$repository_marker" ]] && return
-
-  origin="$(git -C "$directory" remote get-url origin 2>/dev/null || true)"
-  [[ $origin =~ (^|[/:])dotfiles(\.git)?$ ]] ||
-    die "'$directory' is a different Git repository; choose another DOTFILES_DIR."
 }
 
 function prompt_value() {
@@ -270,7 +234,36 @@ function install_nix() {
   log::info "Installing Nix…"
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
   log::info "Nix installed successfully."
-  log::warn "⚠️ Start a new shell and run this script again!"
+}
+
+function activate_nix() {
+  local profile_script
+  local profile_scripts
+  if [[ -n ${NIX_PROFILE_SCRIPT:-} ]]; then
+    profile_scripts=("$NIX_PROFILE_SCRIPT")
+  else
+    profile_scripts=(
+      /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+      "$HOME/.nix-profile/etc/profile.d/nix.sh"
+      /etc/profile.d/nix.sh
+    )
+  fi
+
+  for profile_script in "${profile_scripts[@]}"; do
+    if [[ -r $profile_script ]]; then
+      # shellcheck disable=SC1090
+      source "$profile_script"
+      break
+    fi
+  done
+
+  hash -r
+  if ! command -v nix &>/dev/null; then
+    export PATH="/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:$PATH"
+    hash -r
+  fi
+  command -v nix &>/dev/null ||
+    die "Nix was installed but could not be activated. Start a new shell and run '$directory/scripts/setup' again."
 }
 
 function color::reset() { echo -e "$1\033[0m"; }
@@ -293,4 +286,7 @@ function die() {
   exit "${2:-1}"
 }
 
-main "$@"
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  set -eo pipefail
+  main "$@"
+fi

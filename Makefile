@@ -7,16 +7,16 @@ IDENTITY_ARGS := $(if $(wildcard identity.override/default.nix),--override-input
 
 switch: ## Apply configuration
 ifeq ($(SYSTEM),Darwin)
-	darwin-rebuild switch --flake .#$(HOST) $(IDENTITY_ARGS)
+	nix run $(IDENTITY_ARGS) .#darwin-rebuild -- switch --flake .#$(HOST) $(IDENTITY_ARGS)
 else
-	home-manager switch --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
+	nix run $(IDENTITY_ARGS) .#home-manager -- switch --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
 endif
 
 build: ## Build without applying
 ifeq ($(SYSTEM),Darwin)
-	darwin-rebuild build --flake .#$(HOST) $(IDENTITY_ARGS)
+	nix run $(IDENTITY_ARGS) .#darwin-rebuild -- build --flake .#$(HOST) $(IDENTITY_ARGS)
 else
-	home-manager build --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
+	nix run $(IDENTITY_ARGS) .#home-manager -- build --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
 endif
 
 update: ## Update flake inputs and apply
@@ -30,7 +30,7 @@ check: ## Run all checks (actionlint + treefmt + shellcheck)
 	nix flake check $(IDENTITY_ARGS)
 
 test: check ## Run checks and behavior tests
-	nix develop $(IDENTITY_ARGS) -c ./tests/run.sh
+	nix develop $(IDENTITY_ARGS) -c bats tests
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

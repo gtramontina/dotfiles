@@ -123,7 +123,7 @@ function maintenance_targets_keep_update_switch_and_cleanup_separate { #@test
   assert_output --partial "--delete-older-than 30d"
   refute_output --partial "sudo"
 
-  run make --no-print-directory -n nix-upgrade
+  run make --no-print-directory -n nix-upgrade DETERMINATE_NIXD=determinate-nixd
   assert_success
   assert_output --partial "determinate-nixd upgrade"
 }

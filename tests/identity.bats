@@ -23,8 +23,8 @@ assert_override_raw() {
   local expected="$1"
   shift
 
-  run --separate-stderr nix eval --no-write-lock-file \
-    --override-input identity "path:$fixture" --raw "$@"
+  run --separate-stderr env DOTFILES_IDENTITY="$fixture" \
+    nix eval --impure --raw "$@"
   assert_success
   assert_output "$expected"
 }
@@ -33,8 +33,8 @@ assert_override_json() {
   local expected="$1"
   shift
 
-  run --separate-stderr nix eval --no-write-lock-file \
-    --override-input identity "path:$fixture" --json "$@"
+  run --separate-stderr env DOTFILES_IDENTITY="$fixture" \
+    nix eval --impure --json "$@"
   assert_success
   assert_output "$expected"
 }
@@ -72,13 +72,16 @@ function make_targets_only_use_an_existing_override { #@test
   for target in switch build check; do
     run make --no-print-directory -C "$BATS_TEST_TMPDIR" -f "$root/Makefile" -n "$target"
     assert_success
-    refute_output --partial "--override-input identity"
+    refute_output --partial "DOTFILES_IDENTITY="
+    refute_output --partial "--impure"
 
     mkdir -p "$BATS_TEST_TMPDIR/identity.override"
     : >"$BATS_TEST_TMPDIR/identity.override/default.nix"
     run make --no-print-directory -C "$BATS_TEST_TMPDIR" -f "$root/Makefile" -n "$target"
     assert_success
-    assert_output --partial "--override-input identity path:./identity.override"
+    assert_output --partial 'DOTFILES_IDENTITY="'
+    assert_output --partial '/identity.override"'
+    assert_output --partial "--impure"
     rm -rf "$BATS_TEST_TMPDIR/identity.override"
   done
 }
@@ -99,6 +102,7 @@ function darwin_switch_only_elevates_activation { #@test
   assert_success
   assert_output --partial "sudo --set-home"
   assert_output --partial ".#darwin-rebuild"
+  assert_output --partial "exec zsh -l"
 
   run make --no-print-directory -n build SYSTEM=Darwin HOST=phoenix
   assert_success
@@ -137,6 +141,11 @@ function dot_aliases_follow_the_persisted_checkout { #@test
   assert_raw '"$DOTFILES_DIR/scripts/sync"' \
     '.#darwinConfigurations.orion.config.home-manager.users.gtramontina.programs.zsh.shellAliases."dot:sync"'
   # shellcheck disable=SC2016
+  assert_raw 'make -C "$DOTFILES_DIR" switch' \
+    '.#darwinConfigurations.phoenix.config.home-manager.users.gtramontina.programs.zsh.shellAliases."dot:switch"'
+  assert_raw 'exec zsh -l' \
+    '.#darwinConfigurations.orion.config.home-manager.users.gtramontina.programs.zsh.shellAliases."dot:reload"'
+  # shellcheck disable=SC2016
   assert_raw '"$DOTFILES_DIR/scripts/update"' \
     '.#darwinConfigurations.orion.config.home-manager.users.gtramontina.programs.zsh.shellAliases."dot:update"'
   # shellcheck disable=SC2016
@@ -155,4 +164,5 @@ function direct_override_evaluation_does_not_change_the_lock_file { #@test
     .#darwinConfigurations.orion.config.home-manager.users.colleague.home.homeDirectory
 
   assert_equal "$(git hash-object flake.lock)" "$lock_before"
+  [[ $stderr != *"modified lock file"* ]]
 }

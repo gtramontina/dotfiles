@@ -56,7 +56,7 @@ make test
 
 `make switch` detects the OS and hostname automatically, selecting the right flake target. The switch and build commands run the flake-locked nix-darwin or Home Manager tool through Nix, so they also work before those commands are installed into the user environment. `make switch`, `make build`, and `make check` automatically use `identity.override/` when it exists. Updating, applying, upgrading Nix itself, and deleting old generations remain separate operations so each can be reviewed or rolled back independently.
 
-After switching, the same commands are available from any directory as `dot:*` Zsh aliases: `dot:update`, `dot:sync`, `dot:switch`, `dot:build`, `dot:check`, `dot:test`, `dot:fmt`, `dot:clean`, and `dot:nix-upgrade`. `dot:edit` opens the persisted `DOTFILES_DIR` in `$EDITOR`; `dot:help` lists the Make targets.
+After switching, the same commands are available from any directory as `dot:*` Zsh aliases: `dot:update`, `dot:sync`, `dot:switch`, `dot:build`, `dot:check`, `dot:test`, `dot:fmt`, `dot:clean`, and `dot:nix-upgrade`. `dot:edit` opens the persisted `DOTFILES_DIR` in `$EDITOR`; `dot:help` lists the Make targets. Run `dot:reload` to intentionally replace the current shell with a fresh login shell after configuration changes.
 
 `dot:update` requires a clean worktree, then runs `make update`. When `flake.lock` changes and all checks and builds pass, it shows the change and asks whether to commit and push it. Declining leaves the lock file uncommitted for review; push failures leave the new commit safely available locally.
 
@@ -114,7 +114,7 @@ After switching, the same commands are available from any directory as `dot:*` Z
 
 On first configuration, `scripts/setup` takes the login username, home directory, and dotfiles checkout from the current environment and asks for the full name, personal/work emails, and optional OpenPGP signing keys. It writes the complete result to the ignored `identity.override/default.nix`; rerunning the installer updates it.
 
-Make detects that directory and passes it as an explicit local flake input. This keeps evaluation pure while leaving the tracked fallback untouched. Direct Nix commands use the tracked identity unless you supply the same override, so prefer the Make targets for local builds and checks. Signing key IDs are public configuration; never put private keys or other secrets in either identity file.
+Make detects that directory and passes its absolute path through `DOTFILES_IDENTITY` for an explicit impure local evaluation, leaving the tracked fallback and `flake.lock` untouched. Direct pure Nix commands use the tracked identity, so prefer the Make targets for local builds and checks. Signing key IDs are public configuration; never put private keys or other secrets in either identity file.
 
 The tracked identity leaves `homeDirectory` unset so fallback evaluation can derive the conventional path for each target platform. The local override records the actual `$HOME` of the machine running the installer.
 

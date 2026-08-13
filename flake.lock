@@ -108,18 +108,6 @@
         "type": "github"
       }
     },
-    "identity": {
-      "flake": false,
-      "locked": {
-        "path": "./identity",
-        "type": "path"
-      },
-      "original": {
-        "path": "./identity",
-        "type": "path"
-      },
-      "parent": []
-    },
     "import-tree": {
       "locked": {
         "lastModified": 1763762820,
@@ -171,7 +159,6 @@
         "darwin": "darwin",
         "home-manager": "home-manager",
         "hunk": "hunk",
-        "identity": "identity",
         "nixpkgs": "nixpkgs",
         "treefmt-nix": "treefmt-nix_2"
       }

@@ -6,6 +6,9 @@
   profile ? "personal",
   ...
 }: {
+  # Home Manager's generated options manual triggers a context warning on Nix 2.33.
+  manual.manpages.enable = false;
+
   home = {
     stateVersion = "23.11";
 

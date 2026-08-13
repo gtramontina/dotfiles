@@ -11,9 +11,6 @@
     hunk.url = "github:modem-dev/hunk";
     hunk.inputs.nixpkgs.follows = "nixpkgs";
 
-    identity.url = "path:./identity";
-    identity.flake = false;
-
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -29,7 +26,12 @@
     systems = ["aarch64-darwin" "x86_64-linux"];
     eachSystem = nixpkgs.lib.genAttrs systems;
 
-    identity = import inputs.identity;
+    identityPath = builtins.getEnv "DOTFILES_IDENTITY";
+    identity = import (
+      if identityPath != ""
+      then identityPath
+      else ./identity
+    );
     identityFor = system: let
       homeDirectory =
         if identity.homeDirectory != null

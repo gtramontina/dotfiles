@@ -4,22 +4,25 @@ USER := $(shell whoami)
 NIX := $(shell command -v nix)
 NIX_COLLECT_GARBAGE := $(dir $(NIX))nix-collect-garbage
 DETERMINATE_NIXD := $(shell command -v determinate-nixd)
-IDENTITY_ARGS := $(if $(wildcard identity.override/default.nix),--override-input identity path:./identity.override)
+IDENTITY_ENV := $(if $(wildcard identity.override/default.nix),DOTFILES_IDENTITY="$(abspath identity.override)")
+IDENTITY_ARGS := $(if $(IDENTITY_ENV),--impure --option nix-path "")
+IDENTITY_PREFIX := $(if $(IDENTITY_ENV),env $(IDENTITY_ENV))
 
 .PHONY: switch build update nix-upgrade clean fmt check test help
 
 switch: ## Apply configuration
 ifeq ($(SYSTEM),Darwin)
-	sudo --set-home $(NIX) run $(IDENTITY_ARGS) .#darwin-rebuild -- switch --flake .#$(HOST) $(IDENTITY_ARGS)
+	sudo --set-home $(IDENTITY_PREFIX) $(NIX) run .#darwin-rebuild -- switch --flake .#$(HOST) $(IDENTITY_ARGS)
 else
-	nix run $(IDENTITY_ARGS) .#home-manager -- switch --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
+	$(IDENTITY_PREFIX) nix run .#home-manager -- switch --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
 endif
+	@echo "Run 'exec zsh -l' to load shell changes (or 'dot:reload' when available)."
 
 build: ## Build without applying
 ifeq ($(SYSTEM),Darwin)
-	nix run $(IDENTITY_ARGS) .#darwin-rebuild -- build --flake .#$(HOST) $(IDENTITY_ARGS)
+	$(IDENTITY_PREFIX) nix run .#darwin-rebuild -- build --flake .#$(HOST) $(IDENTITY_ARGS)
 else
-	nix run $(IDENTITY_ARGS) .#home-manager -- build --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
+	$(IDENTITY_PREFIX) nix run .#home-manager -- build --flake .#$(USER)@$(HOST) $(IDENTITY_ARGS)
 endif
 
 update: ## Update, test, and build flake inputs
@@ -41,10 +44,10 @@ fmt: ## Format all nix and shell files
 	nix fmt
 
 check: ## Run all checks (actionlint + treefmt + shellcheck)
-	nix flake check $(IDENTITY_ARGS)
+	$(IDENTITY_PREFIX) nix flake check $(IDENTITY_ARGS)
 
 test: check ## Run checks and behavior tests
-	nix develop $(IDENTITY_ARGS) -c bats tests
+	$(IDENTITY_PREFIX) nix develop $(IDENTITY_ARGS) -c bats tests
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

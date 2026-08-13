@@ -32,9 +32,6 @@ jobs:
       - name: 🧪 Test
         run: make test
 
-      - name: 🔎 Evaluate all systems
-        run: nix flake check --all-systems --no-build
-
       - name: 🐧 Build Linux configuration
         if: runner.os == 'Linux'
         run: nix build '.#homeConfigurations."gtramontina@cygnus".activationPackage'

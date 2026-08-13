@@ -106,7 +106,7 @@ Relative local flake inputs require Nix 2.26 or newer; the installer installs a 
 - `make test` runs the Bats suite. It verifies tracked and overridden identities, repository validation and cloning, the sourceable setup interface, same-process continuation after installing Nix, and the piped installer flow.
 - Expect supplies a real pseudo-terminal for interactive installer scenarios, including repeat installation and minimum-Nix-version behavior.
 - `nix fmt` (or `make fmt`) formats everything via the treefmt wrapper (alejandra for Nix, shfmt for shell).
-- GitHub Actions runs the tests and evaluates all systems on Linux and macOS, then builds the native configurations.
+- GitHub Actions runs the tests on Linux and macOS, then builds the native configurations.
 
 ## Adding a new machine
 

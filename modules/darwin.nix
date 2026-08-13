@@ -1,4 +1,6 @@
 {pkgs, ...}: {
+  nixpkgs.config.allowUnfree = true;
+
   nix = {
     enable = false;
     settings.experimental-features = "nix-command flakes";

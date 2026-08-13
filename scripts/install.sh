@@ -19,88 +19,97 @@ function main() {
 		trap 'link_to_git' EXIT
 	fi
 
-	local os=$(uname -s)
-	local current_host=$(hostname -s)
+	local os
+	os=$(uname -s)
+	local current_host
+	current_host=$(hostname -s)
 	log::info "OS: $os, Hostname: $current_host"
 
 	local host_file="hosts/${current_host}.nix"
-	if [[ -f "$host_file" ]]; then
-		log::info "Existing configuration found for '$current_host'."
+	if [[ ! -f "$host_file" ]]; then
+		log::error "No configuration found for host '$current_host'."
 		echo
-		echo "  (1) Re-apply current configuration"
-		echo "  (2) Reconfigure (change settings)"
-		echo "  (3) Abort"
-		read -rp "Choose [1]: " choice
-		case "$choice" in
-			2) configure "$os" ;;
-			3) exit 0 ;;
-			*) setup ;;
-		esac
-	else
-		configure "$os"
+		echo "To add this machine:"
+		echo "  1. Create hosts/${current_host}.nix (copy an existing host file, adjust profile)"
+		echo "  2. Add an entry to flake.nix (mkDarwin or mkHome)"
+		echo "  3. Commit and push"
+		echo
+		echo "Then run this installer again."
+		exit 1
 	fi
+
+	configure "$current_host"
 }
 
 function configure() {
-	local os="$1"
-	local current_host=$(hostname -s)
+	local hostname="$1"
+	local existing_profile
+	existing_profile="$(detect_profile "$hostname")"
 
 	echo
 	echo "── Configuration ──────────────────────────────"
-	read -rp "Hostname [$current_host]: " hostname
-	hostname="${hostname:-$current_host}"
-
+	log::info "Machine:  $hostname"
+	log::info "Profile:  $existing_profile"
 	echo
+
+	local profile="$existing_profile"
 	echo "Profile:"
 	echo "  (1) personal"
 	echo "  (2) work"
-	read -rp "Choose [1]: " profile_choice
-	local profile
+	read -rp "Confirm [$(echo $(( [[ "$profile" == "work" ]] && echo 2 || echo 1 )))]: " profile_choice
 	case "$profile_choice" in
 		2) profile="work" ;;
-		*) profile="personal" ;;
+		1) profile="personal" ;;
 	esac
 
-	local git_name="Guilherme J. Tramontina"
+	local git_name
 	local git_email
+	git_name="$(git_identity "$profile" name)"
+	git_email="$(git_identity "$profile" email)"
+
 	if [[ "$profile" == "work" ]]; then
 		read -rp "Git name [$git_name]: " input_name
 		git_name="${input_name:-$git_name}"
-		read -rp "Git email: " git_email
-		[[ -z "$git_email" ]] && die "Git email is required for work profile."
+		read -rp "Git email [$git_email]: " input_email
+		git_email="${input_email:-$git_email}"
 	else
 		read -rp "Git name [$git_name]: " input_name
 		git_name="${input_name:-$git_name}"
-		read -rp "Git email [guilherme.tramontina@gmail.com]: " git_email
-		git_email="${git_email:-guilherme.tramontina@gmail.com}"
-	fi
-
-	mkdir -p hosts
-
-	local host_content=""
-	host_content+=$'{\n'
-	host_content+=$'  imports = [\n'
-	host_content+=$'    ../modules/home\n'
-	host_content+=$'    ../modules/profiles/'"${profile}"$'.nix\n'
-	if [[ "$os" == "Linux" ]]; then
-		host_content+=$'    ../modules/linux\n'
-	fi
-	host_content+=$'  ];\n'
-	host_content+=$'}\n'
-
-	printf '%s' "$host_content" > "hosts/${hostname}.nix"
-
-	local profile_file="modules/profiles/${profile}.nix"
-	if [[ -f "$profile_file" ]]; then
-		sed -i.bak "s/email = \"[^\"]*\"/email = \"${git_email}\"/" "$profile_file"
-		rm -f "${profile_file}.bak"
+		read -rp "Git email [$git_email]: " input_email
+		git_email="${input_email:-$git_email}"
 	fi
 
 	echo
-	log::info "Configuration written for '$hostname' ($profile)."
+	echo "Summary:"
+	echo "  Hostname:  $hostname"
+	echo "  Profile:   $profile"
+	echo "  Git name:  $git_name"
+	echo "  Git email: $git_email"
 	echo
+	confirm "Apply this configuration?" || exit 0
 
 	setup
+}
+
+function detect_profile() {
+	local hostname="$1"
+	local host_file="hosts/${hostname}.nix"
+	local p
+	p="$(grep -o 'profiles/[a-z]*' "$host_file" | head -1)"
+	[[ -n "$p" ]] && p="${p#profiles/}"
+	echo "${p:-personal}"
+}
+
+function git_identity() {
+	local profile="$1"
+	local field="$2"
+	local profile_file="modules/profiles/${profile}.nix"
+	local value
+	value="$(grep -o "email = \"[^\"]*\"" "$profile_file" 2>/dev/null | head -1 | sed 's/.*"\(.*\)"/\1/')"
+	if [[ "$field" == "name" ]]; then
+		value="$(grep -o "name = \"[^\"]*\"" "$profile_file" 2>/dev/null | head -1 | sed 's/.*"\(.*\)"/\1/')"
+	fi
+	echo "${value:-}"
 }
 
 function setup() {
@@ -139,6 +148,7 @@ function log::log() { echo "[$(date +'%Y-%m-%dT%H:%M:%S')] $1"; }
 function log::error() { log::log "$(color::red "$1")" >&2; }
 function log::warn() { log::log "$(color::yellow "$1")" >&2; }
 function log::info() { log::log "$(color::blue "$1")"; }
+function confirm() { read -r -p "$(log::log "$(color::bold "$1")") [y/N] " response </dev/tty && [[ "$response" == "y" ]]; }
 function die() { log::error "$1" && exit "${2:-1}"; }
 
 main "$@"

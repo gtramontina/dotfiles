@@ -105,6 +105,45 @@ function darwin_switch_only_elevates_activation { #@test
   refute_output --partial "sudo"
 }
 
+function maintenance_targets_keep_update_switch_and_cleanup_separate { #@test
+  run make --no-print-directory -n update MAKE=:
+  assert_success
+  assert_output --partial "flake update"
+  assert_output --partial ": test"
+  assert_output --partial ": build"
+  refute_output --partial ": switch"
+
+  run make --no-print-directory -n clean SYSTEM=Darwin
+  assert_success
+  assert_output --partial "--delete-older-than 30d"
+  assert_output --partial "sudo --set-home"
+
+  run make --no-print-directory -n clean SYSTEM=Linux
+  assert_success
+  assert_output --partial "--delete-older-than 30d"
+  refute_output --partial "sudo"
+
+  run make --no-print-directory -n nix-upgrade
+  assert_success
+  assert_output --partial "determinate-nixd upgrade"
+}
+
+function dot_aliases_follow_the_persisted_checkout { #@test
+  assert_raw "/Users/gtramontina/.dotfiles" \
+    .#darwinConfigurations.orion.config.home-manager.users.gtramontina.home.sessionVariables.DOTFILES_DIR
+  assert_override_raw "/srv/config/dotfiles" \
+    .#darwinConfigurations.orion.config.home-manager.users.colleague.home.sessionVariables.DOTFILES_DIR
+  # shellcheck disable=SC2016
+  assert_raw 'make -C "$DOTFILES_DIR" update' \
+    '.#darwinConfigurations.orion.config.home-manager.users.gtramontina.programs.zsh.shellAliases."dot:update"'
+  # shellcheck disable=SC2016
+  assert_raw 'make -C "$DOTFILES_DIR" clean' \
+    '.#homeConfigurations."gtramontina@cygnus".config.programs.zsh.shellAliases."dot:clean"'
+  # shellcheck disable=SC2016
+  assert_raw '$EDITOR "$DOTFILES_DIR"' \
+    '.#darwinConfigurations.phoenix.config.home-manager.users.gtramontina.programs.zsh.shellAliases."dot:edit"'
+}
+
 function direct_override_evaluation_does_not_change_the_lock_file { #@test
   local lock_before
   lock_before="$(git hash-object flake.lock)"

@@ -91,7 +91,7 @@ function configure() {
   personal_signing_key="$(prompt_value "Personal signing key" "$personal_signing_key" true)"
   work_signing_key="$(prompt_value "Work signing key" "$work_signing_key" true)"
 
-  validate_identity "$home_directory" "$full_name" "$personal_email" "$work_email" \
+  validate_identity "$home_directory" "$directory" "$full_name" "$personal_email" "$work_email" \
     "$personal_signing_key" "$work_signing_key"
 
   echo
@@ -99,6 +99,7 @@ function configure() {
   echo "  Hostname:             $hostname"
   echo "  Login username:       $username"
   echo "  Home directory:       $home_directory"
+  echo "  Dotfiles directory:   $directory"
   echo "  Full name:            $full_name"
   echo "  Personal email:       $personal_email"
   echo "  Work email:           $work_email"
@@ -107,7 +108,7 @@ function configure() {
   echo
   confirm "Apply this configuration?" || exit 0
 
-  write_identity_override "$username" "$home_directory" "$full_name" "$personal_email" "$work_email" \
+  write_identity_override "$username" "$home_directory" "$directory" "$full_name" "$personal_email" "$work_email" \
     "$personal_signing_key" "$work_signing_key"
   make switch
 }
@@ -137,13 +138,15 @@ function prompt_value() {
 
 function validate_identity() {
   local home_directory="$1"
-  local full_name="$2"
-  local personal_email="$3"
-  local work_email="$4"
-  local personal_signing_key="$5"
-  local work_signing_key="$6"
+  local dotfiles_directory="$2"
+  local full_name="$3"
+  local personal_email="$4"
+  local work_email="$5"
+  local personal_signing_key="$6"
+  local work_signing_key="$7"
 
   [[ $home_directory == /* ]] || die "Home directory must be an absolute path."
+  [[ $dotfiles_directory == /* ]] || die "Dotfiles directory must be an absolute path."
   [[ -n $full_name ]] || die "Full name cannot be empty."
   validate_email "$personal_email" "personal"
   validate_email "$work_email" "work"
@@ -183,11 +186,12 @@ function require_supported_nix() {
 function write_identity_override() {
   local username="$1"
   local home_directory="$2"
-  local full_name="$3"
-  local personal_email="$4"
-  local work_email="$5"
-  local personal_signing_key="$6"
-  local work_signing_key="$7"
+  local dotfiles_directory="$3"
+  local full_name="$4"
+  local personal_email="$5"
+  local work_email="$6"
+  local personal_signing_key="$7"
+  local work_signing_key="$8"
   local temporary_file
 
   mkdir -p "$identity_override_directory"
@@ -196,6 +200,7 @@ function write_identity_override() {
 
   if ! IDENTITY_USERNAME="$username" \
     IDENTITY_HOME_DIRECTORY="$home_directory" \
+    IDENTITY_DOTFILES_DIRECTORY="$dotfiles_directory" \
     IDENTITY_FULL_NAME="$full_name" \
     IDENTITY_PERSONAL_EMAIL="$personal_email" \
     IDENTITY_WORK_EMAIL="$work_email" \
@@ -209,6 +214,7 @@ function write_identity_override() {
         flake.inputs.nixpkgs.lib.generators.toPretty {} {
           username = env "IDENTITY_USERNAME";
           homeDirectory = env "IDENTITY_HOME_DIRECTORY";
+          dotfilesDirectory = env "IDENTITY_DOTFILES_DIRECTORY";
           fullName = env "IDENTITY_FULL_NAME";
           profiles = {
             personal = {

@@ -138,6 +138,7 @@ function piped_installer_configures_and_reuses_local_identity { #@test
   assert_file_exist "$identity_file"
   assert_equal "test-user" "$(nix eval --raw --file "$identity_file" username)"
   assert_equal "$HOME" "$(nix eval --raw --file "$identity_file" homeDirectory)"
+  assert_equal "$repository" "$(nix eval --raw --file "$identity_file" dotfilesDirectory)"
   assert_equal 'Jane "Q" \ Tester' "$(nix eval --raw --file "$identity_file" fullName)"
   assert_equal "jane@example.com" "$(nix eval --raw --file "$identity_file" profiles.personal.email)"
   assert_equal "jane@work.example.com" "$(nix eval --raw --file "$identity_file" profiles.work.email)"

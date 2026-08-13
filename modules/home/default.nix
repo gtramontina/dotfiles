@@ -1,5 +1,6 @@
 {
   config,
+  identity,
   lib,
   pkgs,
   profile ? "personal",
@@ -10,6 +11,7 @@
 
     sessionVariables = {
       EDITOR = "vim";
+      DOTFILES_DIR = identity.dotfilesDirectory;
       HOMEBREW_NO_ANALYTICS = 1;
       HOMEBREW_NO_ENV_HINTS = 1;
     };
@@ -18,6 +20,7 @@
       (with pkgs; [
         devbox
         gh
+        gnumake
         gnupg
         ripgrep
 

@@ -30,15 +30,21 @@
     eachSystem = nixpkgs.lib.genAttrs systems;
 
     identity = import inputs.identity;
-    identityFor = system:
+    identityFor = system: let
+      homeDirectory =
+        if identity.homeDirectory != null
+        then identity.homeDirectory
+        else if nixpkgs.lib.hasSuffix "-darwin" system
+        then "/Users/${identity.username}"
+        else "/home/${identity.username}";
+    in
       identity
       // {
-        homeDirectory =
-          if identity.homeDirectory != null
-          then identity.homeDirectory
-          else if nixpkgs.lib.hasSuffix "-darwin" system
-          then "/Users/${identity.username}"
-          else "/home/${identity.username}";
+        inherit homeDirectory;
+        dotfilesDirectory =
+          if (identity.dotfilesDirectory or null) != null
+          then identity.dotfilesDirectory
+          else "${homeDirectory}/.dotfiles";
       };
 
     mkTreefmt = system: let

@@ -2,6 +2,7 @@
   username = "colleague";
   fullName = "Colleague Example";
   homeDirectory = "/srv/home/colleague";
+  dotfilesDirectory = "/srv/config/dotfiles";
 
   profiles = {
     personal = {

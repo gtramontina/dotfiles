@@ -2,6 +2,7 @@
   username = "gtramontina";
   fullName = "Guilherme J. Tramontina";
   homeDirectory = null;
+  dotfilesDirectory = null;
 
   profiles = {
     personal = {

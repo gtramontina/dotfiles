@@ -19,6 +19,16 @@
       shellAliases = {
         l = "eza --all --long --header --links --git --git-repos --icons --classify --hyperlink";
         g = "git";
+        "dot:build" = "make -C \"$DOTFILES_DIR\" build";
+        "dot:check" = "make -C \"$DOTFILES_DIR\" check";
+        "dot:clean" = "make -C \"$DOTFILES_DIR\" clean";
+        "dot:edit" = "$EDITOR \"$DOTFILES_DIR\"";
+        "dot:fmt" = "make -C \"$DOTFILES_DIR\" fmt";
+        "dot:help" = "make -C \"$DOTFILES_DIR\" help";
+        "dot:nix-upgrade" = "make -C \"$DOTFILES_DIR\" nix-upgrade";
+        "dot:switch" = "make -C \"$DOTFILES_DIR\" switch";
+        "dot:test" = "make -C \"$DOTFILES_DIR\" test";
+        "dot:update" = "make -C \"$DOTFILES_DIR\" update";
       };
       initContent = lib.optionalString pkgs.stdenv.isDarwin ''
         eval "$(/opt/homebrew/bin/brew shellenv)"

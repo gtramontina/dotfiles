@@ -23,6 +23,7 @@
             ./modules/homebrew.nix
             home-manager.darwinModules.home-manager
             {
+              home-manager.useGlobalPkgs = true;
               home-manager.extraSpecialArgs = { inherit inputs profile; };
               home-manager.users.gtramontina.imports = [ ./hosts/${hostname}.nix ];
             }

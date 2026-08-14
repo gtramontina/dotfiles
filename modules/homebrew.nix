@@ -54,7 +54,6 @@
         "notion-calendar"
         "slack"
         "licecap"
-        "tuple"
         "pop-app"
       ];
 

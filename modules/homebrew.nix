@@ -51,6 +51,7 @@
         "stremio"
       ]
       ++ lib.optionals (profile == "work") [
+        "lm-studio"
         "notion-calendar"
         "slack"
         "licecap"

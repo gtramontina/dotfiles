@@ -20,7 +20,12 @@
       cask_args appdir: "${config.system.primaryUserHome}/Applications"
     '';
 
-    taps = [];
+    taps = [
+      {
+        name = "abue-ammar/tinycast";
+        trusted = true;
+      }
+    ];
 
     brews = [
       "gemini-cli"
@@ -32,6 +37,7 @@
       [
         "1password"
         "8bitdo-ultimate-software-v2"
+        "abue-ammar/tinycast/tinycast"
         "appcleaner"
         "betterdisplay"
         "brave-browser"
@@ -41,7 +47,6 @@
         "monodraw"
         "orbstack"
         "protonvpn"
-        "raycast"
         "shottr"
         "the-unarchiver"
         "zed@preview"

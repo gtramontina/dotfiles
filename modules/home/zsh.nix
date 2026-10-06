@@ -32,10 +32,10 @@
         "dot:test" = "make -C \"$DOTFILES_DIR\" test";
         "dot:update" = "\"$DOTFILES_DIR/scripts/update\"";
       };
-      initContent = lib.optionalString pkgs.stdenv.isDarwin ''
+      initContent = lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
         eval "$(/opt/homebrew/bin/brew shellenv)"
       '';
-      profileExtra = lib.optionalString pkgs.stdenv.isDarwin ''
+      profileExtra = lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
         source ~/.orbstack/shell/init.zsh 2>/dev/null || :
       '';
     };

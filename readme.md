@@ -104,7 +104,7 @@ After switching, the same commands are available from any directory as `dot:*` Z
 **Configuration layers:**
 
 - **Identity** (who uses the configuration) — the `identity` flake input supplies the login username, home directory, full name, and per-profile git email/signing key. It defaults to tracked `identity/default.nix`.
-- **Platform** (macOS vs Linux) — handled by `stdenv.isDarwin` / `isLinux` guards in modules. `darwin.nix` and `homebrew.nix` are macOS-only. `linux.nix` is Linux-only.
+- **Platform** (macOS vs Linux) — handled by `pkgs.stdenv.hostPlatform` guards in modules. `darwin.nix` and `homebrew.nix` are macOS-only. `linux.nix` is Linux-only.
 - **Profile** (personal vs work) — selected once in `flake.nix`; it chooses the matching identity details and profile-only packages, modules, and Homebrew casks.
 - **Host** (which machine) — each host file composes `modules/home` (shared core) and platform-specific modules. Hostnames match flake config names for auto-detection.
 

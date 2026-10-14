@@ -41,6 +41,7 @@
         "appcleaner"
         "betterdisplay"
         "brave-browser"
+        "gitbutler" # Includes the but CLI.
         "handy"
         "little-snitch"
         "micro-snitch"

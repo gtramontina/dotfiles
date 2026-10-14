@@ -1,12 +1,18 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: {
   home = {
-    packages = with pkgs; [
-      git-extras
-    ];
+    packages =
+      (with pkgs; [
+        git-extras
+      ])
+      ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux (with pkgs; [
+        gitbutler
+        but
+      ]);
   };
 
   programs.git = {

@@ -43,6 +43,7 @@
         "brave-browser"
         "gitbutler" # Includes the but CLI.
         "handy"
+        "herdr-app"
         "little-snitch"
         "micro-snitch"
         "monodraw"

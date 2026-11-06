@@ -10,7 +10,12 @@ if [[ -n $(git status --porcelain) ]]; then
   exit 1
 fi
 
-make update
+make update || {
+  update_status=$?
+  git restore -- flake.lock
+  echo "Update failed; restored flake.lock. See the error above." >&2
+  exit "$update_status"
+}
 
 if ! git diff --quiet -- . ':(exclude)flake.lock' ||
   [[ -n $(git ls-files --others --exclude-standard) ]]; then

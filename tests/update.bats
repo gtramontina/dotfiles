@@ -32,6 +32,15 @@ setup() {
 printf 'called\n' >>"$TEST_MAKE_LOG"
 case "${TEST_UPDATE_MODE:-change}" in
   change) printf 'updated\n' >"$TEST_REPOSITORY/flake.lock" ;;
+  failure)
+    printf 'updated\n' >"$TEST_REPOSITORY/flake.lock"
+    exit 23
+    ;;
+  extra_failure)
+    printf 'updated\n' >"$TEST_REPOSITORY/flake.lock"
+    printf 'unexpected\n' >"$TEST_REPOSITORY/unexpected"
+    exit 23
+    ;;
   extra) printf 'unexpected\n' >"$TEST_REPOSITORY/unexpected" ;;
   unchanged) ;;
 esac
@@ -62,6 +71,33 @@ function update_reports_when_inputs_are_unchanged { #@test
   assert_success
   assert_output --partial "already up to date"
   assert_equal "1" "$(git -C "$repository" rev-list --count HEAD)"
+}
+
+function update_restores_the_lock_file_when_validation_fails { #@test
+  export TEST_UPDATE_MODE=failure
+
+  run "$repository/scripts/update"
+
+  assert_failure 23
+  assert_output --partial "restored flake.lock"
+  assert_equal "" "$(git -C "$repository" status --short)"
+  assert_equal "1" "$(git -C "$repository" rev-list --count HEAD)"
+
+  export TEST_UPDATE_MODE=unchanged
+  run "$repository/scripts/update"
+
+  assert_success
+  assert_output --partial "already up to date"
+}
+
+function update_preserves_other_changes_when_validation_fails { #@test
+  export TEST_UPDATE_MODE=extra_failure
+
+  run "$repository/scripts/update"
+
+  assert_failure 23
+  assert_equal "initial" "$(<"$repository/flake.lock")"
+  assert_equal "unexpected" "$(<"$repository/unexpected")"
 }
 
 function update_aborts_if_more_than_the_lock_file_changes { #@test

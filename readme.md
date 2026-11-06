@@ -58,7 +58,7 @@ make test
 
 After switching, the same commands are available from any directory as `dot:*` Zsh aliases: `dot:update`, `dot:sync`, `dot:switch`, `dot:build`, `dot:check`, `dot:test`, `dot:fmt`, `dot:clean`, and `dot:nix-upgrade`. `dot:edit` opens the persisted `DOTFILES_DIR` in `$EDITOR`; `dot:help` lists the Make targets. Run `dot:reload` to intentionally replace the current shell with a fresh login shell after configuration changes.
 
-`dot:update` requires a clean worktree, then runs `make update`. When `flake.lock` changes and all checks and builds pass, it shows the change and asks whether to commit and push it. Declining leaves the lock file uncommitted for review; push failures leave the new commit safely available locally.
+`dot:update` requires a clean worktree, then runs `make update`. If updating, testing, or building fails, it restores `flake.lock` so the update can be retried. When `flake.lock` changes and all checks and builds pass, it shows the change and asks whether to commit and push it. Declining leaves the lock file uncommitted for review; push failures leave the new commit safely available locally.
 
 `dot:sync` is the routine receiving flow for an existing machine. It requires a clean worktree, fast-forwards the tracked branch, reloads the newly pulled sync script, and applies the configuration. Use the standalone installer for first-time setup or repair instead.
 

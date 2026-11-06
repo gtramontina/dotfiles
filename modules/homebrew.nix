@@ -39,6 +39,7 @@
         "8bitdo-ultimate-software-v2"
         "abue-ammar/tinycast/tinycast"
         "appcleaner"
+        "balenaetcher"
         "betterdisplay"
         "brave-browser"
         "gitbutler" # Includes the but CLI.

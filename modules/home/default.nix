@@ -13,10 +13,13 @@
     stateVersion = "23.11";
 
     sessionVariables = {
+      DISABLE_TELEMETRY = 1;
+      DO_NOT_TRACK = 1;
       EDITOR = "vim";
       DOTFILES_DIR = identity.dotfilesDirectory;
       HOMEBREW_NO_ANALYTICS = 1;
       HOMEBREW_NO_ENV_HINTS = 1;
+      OTEL_SDK_DISABLED = "true";
     };
 
     packages =

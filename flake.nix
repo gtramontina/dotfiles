@@ -58,6 +58,8 @@
         programs.alejandra.enable = true;
         programs.shfmt = {
           enable = true;
+          indent_size = 2;
+          simplify = true;
           includes = [
             "*.sh"
             "*.bash"
